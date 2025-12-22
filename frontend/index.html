@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سامانه اشیاء گمشده دانشگاه</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav>
+        <div class="logo">یافته‌های دانشگاه</div>
+        <div class="menu">
+            <button id="btn-login">ورود / ثبت‌نام</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="search-box">
+                <input type="text" placeholder="جستجو..." id="search-input">
+            </div>
+            <div id="items-list">
+                <p style="text-align: center; color: #666;">در حال بارگذاری آیتم‌ها...</p>
+            </div>
+            <button id="btn-add-item" class="fab">+</button>
+        </aside>
+
+        <!-- Map -->
+        <main id="map-container">
+            <div id="map"></div>
+        </main>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Main App JS -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
