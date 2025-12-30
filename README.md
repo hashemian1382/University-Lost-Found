@@ -3,6 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Django](https://img.shields.io/badge/Django-4.2-green)
 ![DRF](https://img.shields.io/badge/Django_REST_Framework-3.14-red)
+![React](https://img.shields.io/badge/React-18.x-61DAFB)
 ![Leaflet](https://img.shields.io/badge/Map-Leaflet.js-orange)
 
 A location-based platform designed to replace telegram groups for lost and found items within the university campus. Users can pin items on the map, comment, and report issues.
@@ -13,7 +14,7 @@ A location-based platform designed to replace telegram groups for lost and found
 
 - **Backend:** Python, Django, Django REST Framework (DRF)
 - **Database:** SQLite (Default for development)
-- **Frontend:** HTML5, CSS3, Vanilla JS (Modules)
+- **Frontend:** React.js
 - **Map Provider:** Leaflet.js / OpenStreetMap
 - **Authentication:** JWT (JSON Web Token) with OTP support
 
@@ -71,11 +72,23 @@ A location-based platform designed to replace telegram groups for lost and found
     - Swagger UI: [http://127.0.0.1:8000/swagger/](http://127.0.0.1:8000/swagger/)
     - ReDoc: [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc/)
 
-### 2️⃣ Frontend Setup
+### 2️⃣ Frontend Setup (React)
 
-1.  Navigate to the `frontend` folder.
-2.  Open `index.html` in your browser.
-    - *Tip:* For better performance and API connectivity, use the "Live Server" extension in VS Code.
+1.  **Navigate to the frontend folder:**
+    ```bash
+    cd frontend
+    ```
+
+2.  **Install Node modules:**
+    ```bash
+    npm install
+    ```
+
+3.  **Run the development server:**
+    ```bash
+    npm start
+    ```
+    - The application should open at [http://localhost:3000](http://localhost:3000).
 
 ---
 
