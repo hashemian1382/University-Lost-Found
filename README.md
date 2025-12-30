@@ -1,19 +1,95 @@
-# University Lost & Found System (Team 10)
+# 📍 University Lost & Found System (Team 10)
 
-## Tech Stack
-- **Backend:** Python (FastAPI) + SQLite
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![Django](https://img.shields.io/badge/Django-4.2-green)
+![DRF](https://img.shields.io/badge/Django_REST_Framework-3.14-red)
+![Leaflet](https://img.shields.io/badge/Map-Leaflet.js-orange)
+
+A location-based platform designed to replace telegram groups for lost and found items within the university campus. Users can pin items on the map, comment, and report issues.
+
+---
+
+## 🚀 Tech Stack
+
+- **Backend:** Python, Django, Django REST Framework (DRF)
+- **Database:** SQLite (Default for development)
 - **Frontend:** HTML5, CSS3, Vanilla JS (Modules)
-- **Map:** Leaflet.js
+- **Map Provider:** Leaflet.js / OpenStreetMap
+- **Authentication:** JWT (JSON Web Token) with OTP support
 
-## How to Run
+---
 
-### Backend
-1. Install Python.
-2. `cd backend`
-3. `pip install -r requirements.txt`
-4. `uvicorn main:app --reload`
-   - API Docs: http://127.0.0.1:8000/docs
+## ✨ Features
 
-### Frontend
-1. Go to `frontend` folder.
-2. Open `index.html` in your browser (or use Live Server in VS Code).
+- **User Authentication:** Sign up with Email/OTP, Login (JWT), and Profile management.
+- **Map Integration:** View lost/found items visually on the university map.
+- **Item Management:** Post items with images, tags, and location.
+- **Interactions:** Threaded comments system under items.
+- **Moderation:** Community-based reporting system (auto-hide content after 5 reports).
+
+---
+
+## 🛠️ How to Run
+
+### 1️⃣ Backend Setup (Django)
+
+1.  **Navigate to the backend folder:**
+    ```bash
+    cd backend
+    ```
+
+2.  **Create and activate a virtual environment (Recommended):**
+    ```bash
+    # Windows
+    python -m venv venv
+    venv\Scripts\activate
+
+    # Mac/Linux
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+3.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Setup Database & Seed Data:**
+    ```bash
+    python manage.py makemigrations
+    python manage.py migrate
+    python manage.py seed_tags      # Adds default tags (Keys, Wallet, etc.)
+    python manage.py createsuperuser # Create an admin account (Optional)
+    ```
+
+5.  **Run the Server:**
+    ```bash
+    python manage.py runserver
+    ```
+
+6.  **Access API Documentation:**
+    - Swagger UI: [http://127.0.0.1:8000/swagger/](http://127.0.0.1:8000/swagger/)
+    - ReDoc: [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc/)
+
+### 2️⃣ Frontend Setup
+
+1.  Navigate to the `frontend` folder.
+2.  Open `index.html` in your browser.
+    - *Tip:* For better performance and API connectivity, use the "Live Server" extension in VS Code.
+
+---
+
+## 📝 API Endpoints Overview
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/auth/send-otp/` | Send OTP to email |
+| `POST` | `/api/auth/login/` | Get JWT Tokens |
+| `GET` | `/api/items/` | List all items |
+| `POST` | `/api/items/` | Create a new item (Auth required) |
+| `GET` | `/api/map-data/` | Lightweight map data (Lat/Lon) |
+| `POST` | `/api/comments/add/` | Add a comment |
+
+---
+
+**Developed by Team 10**
