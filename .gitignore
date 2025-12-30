@@ -157,3 +157,20 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+
+# Python & Django
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+db.sqlite3
+.DS_Store
+
+# Environments
+venv/
+env/
+.env
+
+# Media
+media/

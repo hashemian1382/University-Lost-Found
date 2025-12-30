@@ -1,5 +1,6 @@
-fastapi
-uvicorn
-sqlalchemy
-pydantic
-python-multipart
+Django>=4.2
+djangorestframework>=3.14
+django-cors-headers>=4.0
+django-filter>=23.0
+Pillow>=10.0
+rest_framework_simplejwt>=5.3
