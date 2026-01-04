@@ -6,36 +6,31 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import OTPRequest
 from .serializers import (
     SendOTPSerializer, VerifyOTPSerializer, 
-    SetPasswordSerializer, UserProfileSerializer
+    SetPasswordSerializer, UserProfileSerializer, ChangePasswordSerializer
 )
 
 User = get_user_model()
 
 class SendOTPView(views.APIView):
     permission_classes = [AllowAny]
-
     def post(self, request):
         serializer = SendOTPSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data['email']
             otp = OTPRequest.generate_otp()
-            OTPRequest.objects.create(email=email, otp_code=otp)
             print(f"\n========== KOD OTP: {otp} ==========\n")
-            # In a real app, send email here.
+            OTPRequest.objects.create(email=email, otp_code=otp)
             return Response({"message": "OTP sent", "otp_debug": otp}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class VerifyOTPView(views.APIView):
     permission_classes = [AllowAny]
-
     def post(self, request):
         serializer = VerifyOTPSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data['email']
             code = serializer.validated_data['otp_code']
-            
             otp_obj = OTPRequest.objects.filter(email=email, otp_code=code, is_verified=False).order_by('-created_at').first()
-            
             if otp_obj and otp_obj.is_valid():
                 otp_obj.is_verified = True
                 otp_obj.save()
@@ -45,7 +40,6 @@ class VerifyOTPView(views.APIView):
 
 class SetPasswordView(views.APIView):
     permission_classes = [AllowAny]
-
     def post(self, request):
         serializer = SetPasswordSerializer(data=request.data)
         if serializer.is_valid():
@@ -60,15 +54,29 @@ class SetPasswordView(views.APIView):
             if otp_obj:
                 user, created = User.objects.get_or_create(email=email)
                 user.set_password(password)
+                user.first_name = first_name
+                user.last_name = last_name
                 user.save()
-                otp_obj.delete() # Cleanup
-                return Response({"message": "Account created/updated successfully"}, status=status.HTTP_201_CREATED)
+                otp_obj.delete()
+                return Response({"message": "Account created successfully"}, status=status.HTTP_201_CREATED)
             return Response({"error": "OTP not verified"}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserProfileSerializer
-
     def get_object(self):
         return self.request.user
+
+class ChangePasswordView(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+            if user.check_password(serializer.data.get('old_password')):
+                user.set_password(serializer.data.get('new_password'))
+                user.save()
+                return Response({'message': 'Password changed successfully'}, status=status.HTTP_200_OK)
+            return Response({'error': 'Incorrect old password'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -21,14 +21,30 @@
                 <a href="login.html" class="btn btn-outline">ورود به حساب</a>
                 <a href="signup.html" class="btn btn-primary">ثبت نام</a>
             </div>
-            <div id="user-links" class="hidden">
+            <div id="user-links" class="hidden" style="display: flex; align-items: center; gap: 10px;">
                 <a href="create-item.html" class="btn btn-primary">ثبت آگهی جدید +</a>
-                <button onclick="logout()" class="btn btn-outline">خروج</button>
+                
+                <!-- دکمه پروفایل جدید -->
+                <a href="profile.html" class="btn btn-outline" style="padding: 8px 12px; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;" title="پروفایل من">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+
+                <button onclick="logout()" class="btn btn-outline" style="padding: 10px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
             </div>
         </div>
     </nav>
 
     <div class="app-container">
+        <!-- بقیه کدها مثل قبل دست نخورده باقی می‌ماند -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="search-container">
@@ -38,34 +54,28 @@
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                 </div>
-
                 <div class="filter-grid">
                     <select id="tag-filter" class="filter-select" onchange="app.updateFilter('tag', this.value)">
                         <option value="">همه دسته‌بندی‌ها</option>
                     </select>
-                    
                     <select id="sort-filter" class="filter-select" onchange="app.updateFilter('sort', this.value)">
                         <option value="newest">جدیدترین</option>
                         <option value="oldest">قدیمی‌ترین</option>
                     </select>
                 </div>
-
                 <div class="tabs">
                     <div class="tab active" onclick="app.updateFilter('type', 'ALL')">همه آگهی‌ها</div>
                     <div class="tab" onclick="app.updateFilter('type', 'LOST')">گمشده‌ها</div>
                     <div class="tab" onclick="app.updateFilter('type', 'FOUND')">پیداشده‌ها</div>
                 </div>
             </div>
-
             <div id="items-list" class="items-list"></div>
         </aside>
-
         <main class="map-area">
             <div id="map"></div>
         </main>
     </div>
 
-    <!-- Modal (Popup) -->
     <div id="item-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-header">
@@ -74,27 +84,14 @@
             </div>
             <div class="modal-body">
                 <img id="modal-image" src="" style="width:100%; height:250px; object-fit:cover; border-radius:12px; margin-bottom:24px; background:#f3f4f6;">
-                
                 <div class="modal-detail-row">
-                    <div class="detail-item">
-                        <span class="detail-label">ثبت کننده</span>
-                        <span class="detail-value" id="modal-user"></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">تاریخ ثبت</span>
-                        <span class="detail-value" id="modal-date"></span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">وضعیت</span>
-                        <span class="detail-value" id="modal-status"></span>
-                    </div>
+                    <div class="detail-item"><span class="detail-label">ثبت کننده</span><span class="detail-value" id="modal-user"></span></div>
+                    <div class="detail-item"><span class="detail-label">تاریخ ثبت</span><span class="detail-value" id="modal-date"></span></div>
+                    <div class="detail-item"><span class="detail-label">وضعیت</span><span class="detail-value" id="modal-status"></span></div>
                 </div>
-
                 <p id="modal-desc" class="modal-desc"></p>
                 <div id="modal-tags" style="display:flex; gap:8px;"></div>
             </div>
-
-            <!-- دکمه جدید که قبلاً جا افتاده بود -->
             <div class="modal-footer" style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
                 <button id="modal-details-btn" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">
                     مشاهده جزئیات کامل و گفتگو

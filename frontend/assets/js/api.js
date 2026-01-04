@@ -26,7 +26,7 @@ class ApiService {
         const data = await response.json();
         
         if (!response.ok) {
-            throw new Error(JSON.stringify(data) || 'API Request Failed');
+            throw new Error(JSON.stringify(data));
         }
         return data;
     }
@@ -43,18 +43,25 @@ class ApiService {
     }
 
     static async verifyRegister(email, otp, password, firstName, lastName) {
-        await this.request(CONFIG.ENDPOINTS.VERIFY_OTP, 'POST', { 
-            email: email, 
-            otp_code: otp 
-        });
-
+        await this.request(CONFIG.ENDPOINTS.VERIFY_OTP, 'POST', { email, otp_code: otp });
         return await this.request(CONFIG.ENDPOINTS.SET_PASSWORD, 'POST', { 
-            email: email, 
-            otp_code: otp,
-            password: password,
-            first_name: firstName,
-            last_name: lastName
+            email, otp_code: otp, password, first_name: firstName, last_name: lastName 
         });
+    }
+
+    static async getProfile() {
+        return await this.request(CONFIG.ENDPOINTS.USER_PROFILE, 'GET', null, true);
+    }
+
+    static async updateProfile(data) {
+        return await this.request(CONFIG.ENDPOINTS.USER_PROFILE, 'PATCH', data, true);
+    }
+
+    static async changePassword(oldPassword, newPassword) {
+        return await this.request(CONFIG.ENDPOINTS.CHANGE_PASSWORD, 'POST', { 
+            old_password: oldPassword, 
+            new_password: newPassword 
+        }, true);
     }
 
     static async getItems(params = {}) {

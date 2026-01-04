@@ -6,6 +6,7 @@ const CONFIG = {
         VERIFY_OTP: '/api/auth/verify-otp/',
         SET_PASSWORD: '/api/auth/set-password/',
         USER_PROFILE: '/api/auth/profile/',
+        CHANGE_PASSWORD: '/api/auth/change-password/',
         ITEMS: '/api/items/', 
         TAGS: '/api/tags/',  
     }
