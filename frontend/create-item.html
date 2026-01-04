@@ -34,12 +34,9 @@
                         </select>
                     </div>
                     <div style="flex:1">
-                        <label class="form-label">دسته</label>
-                        <select name="tag" class="form-select">
-                            <option value="1">الکترونیکی</option>
-                            <option value="2">مدارک</option>
-                            <option value="3">پوشاک</option>
-                            <option value="4">سایر</option>
+                        <label class="form-label">دسته بندی</label>
+                        <select name="tag" id="tag-select" class="form-select" required>
+                            <option value="">در حال بارگذاری...</option>
                         </select>
                     </div>
                 </div>
@@ -56,7 +53,6 @@
 
                 <div class="form-group">
                     <label class="form-label">موقعیت روی نقشه (الزامی)</label>
-                    <!-- ID اینجا form-map است -->
                     <div id="form-map" style="height: 300px; width:100%; border-radius:8px; border:1px solid #ddd;"></div>
                     <input type="hidden" name="latitude" id="lat">
                     <input type="hidden" name="longitude" id="lng">

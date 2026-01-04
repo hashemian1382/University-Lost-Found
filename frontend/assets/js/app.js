@@ -1,4 +1,3 @@
-// متغیرهای سراسری
 let mainMap;
 let formMap;
 let markersLayer;
@@ -7,14 +6,12 @@ let formMarker;
 document.addEventListener('DOMContentLoaded', () => {
     checkAuthUI();
 
-    // تشخیص اینکه در کدام صفحه‌ایم
     const mapElement = document.getElementById('map');
     const formMapElement = document.getElementById('form-map');
 
-    // --- 1. لاجیک صفحه اصلی (نقشه + لیست) ---
     if (mapElement && !formMapElement) {
         initMainMap();
-        loadItems(); // دریافت لیست آیتم‌ها
+        loadItems();
 
         const searchInput = document.getElementById('search-input');
         if (searchInput) {
@@ -24,21 +21,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 2. لاجیک صفحه ثبت آیتم ---
     if (formMapElement) {
-        // محافظت از صفحه
         if (!localStorage.getItem('access_token')) {
             window.location.href = 'login.html';
             return;
         }
 
         initFormMap();
+        loadTagsForForm(); // فراخوانی تابع جدید برای دریافت تگ‌ها
         
         const form = document.getElementById('create-item-form');
         if (form) {
             form.addEventListener('submit', handleItemSubmit);
             
-            // چک کردن برای حالت ادیت
             const urlParams = new URLSearchParams(window.location.search);
             const editId = urlParams.get('id');
             if (editId) {
@@ -49,11 +44,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ---------------------------------------------
-// توابع مربوط به صفحه اصلی
-// ---------------------------------------------
+// تابع جدید: دریافت تگ‌ها برای فرم ثبت
+async function loadTagsForForm() {
+    try {
+        const response = await ApiService.request(CONFIG.ENDPOINTS.TAGS);
+        const tags = Array.isArray(response) ? response : (response.results || []);
+        
+        const select = document.getElementById('tag-select');
+        select.innerHTML = ''; // پاک کردن گزینه "در حال بارگذاری..."
+        
+        tags.forEach(tag => {
+            const opt = document.createElement('option');
+            opt.value = tag.id; // ارسال ID به سرور
+            opt.textContent = tag.name; // نمایش نام به کاربر
+            select.appendChild(opt);
+        });
+    } catch (error) {
+        console.error('Error loading tags:', error);
+        const select = document.getElementById('tag-select');
+        select.innerHTML = '<option value="">خطا در بارگذاری دسته‌بندی‌ها</option>';
+    }
+}
+
 function initMainMap() {
-    // مختصات شریف
     const SHARIF_COORDS = [35.7036, 51.3515];
     
     mainMap = L.map('map').setView(SHARIF_COORDS, 16);
@@ -132,7 +145,6 @@ function addPinToMap(item) {
     markersLayer.addLayer(marker);
 }
 
-// تابع گلوبال برای دکمه‌های داخل HTML
 window.focusOnItem = function(lat, lng) {
     if (mainMap) {
         mainMap.flyTo([lat, lng], 18);
@@ -143,7 +155,6 @@ window.focusOnItem = function(lat, lng) {
 };
 
 window.filterItems = function(type) {
-    // مدیریت کلاس اکتیو تب‌ها
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     event.target.classList.add('active');
     
@@ -151,10 +162,6 @@ window.filterItems = function(type) {
     else loadItems({ type: type });
 };
 
-
-// ---------------------------------------------
-// توابع مربوط به صفحه ثبت آیتم
-// ---------------------------------------------
 function initFormMap() {
     const SHARIF_COORDS = [35.7036, 51.3515];
     
@@ -164,7 +171,6 @@ function initFormMap() {
         attribution: 'OpenStreetMap'
     }).addTo(formMap);
 
-    // فیکس کردن مشکل رندر نشدن نقشه در تب‌های مخفی یا مودال
     setTimeout(() => { formMap.invalidateSize(); }, 200);
 
     formMap.on('click', function(e) {
@@ -177,7 +183,7 @@ function initFormMap() {
 }
 
 async function handleItemSubmit(e) {
-    e.preventDefault(); // جلوگیری از رفرش صفحه
+    e.preventDefault();
     
     const btn = e.target.querySelector('button[type="submit"]');
     const originalText = btn.textContent;
@@ -187,7 +193,6 @@ async function handleItemSubmit(e) {
     const formData = new FormData(e.target);
     const id = formData.get('id');
 
-    // مقداردهی پیش‌فرض مختصات اگر انتخاب نشده باشد
     if (!formData.get('latitude')) {
         formData.set('latitude', 35.7036);
         formData.set('longitude', 51.3515);
@@ -218,12 +223,21 @@ async function loadItemForEdit(id) {
         form.querySelector('[name="title"]').value = item.title;
         form.querySelector('[name="description"]').value = item.description;
         form.querySelector('[name="type"]').value = item.type;
-        if(item.tag) form.querySelector('[name="tag"]').value = item.tag;
         
+        // منتظر می‌مانیم تا تگ‌ها لود شوند، سپس تگ مورد نظر را انتخاب می‌کنیم
+        // چون loadTagsForForm ناهمگام است، ممکن است لازم باشد کمی صبر کنیم یا منطق را دقیق‌تر کنیم.
+        // اما معمولا مرورگرها مقدار را ست می‌کنند حتی اگر آپشن‌ها کمی دیرتر بیایند.
+        // برای اطمینان بیشتر، مقداردهی تگ را اینجا انجام می‌دهیم:
+        const tagSelect = document.getElementById('tag-select');
+        
+        // اگر تگ‌ها یک لیست باشند (طبق سریالایزر جدید، tags یک لیست ID است)
+        if (item.tags && item.tags.length > 0) {
+            tagSelect.value = item.tags[0]; // فعلا فقط تگ اول را ست میکنیم
+        }
+
         document.getElementById('lat').value = item.latitude;
         document.getElementById('lng').value = item.longitude;
         
-        // افزودن ID مخفی
         let idInput = form.querySelector('input[name="id"]');
         if (!idInput) {
             idInput = document.createElement('input');
