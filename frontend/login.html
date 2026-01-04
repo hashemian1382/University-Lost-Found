@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود به سامانه</title>
+    <link rel="stylesheet" href="assets/css/auth-modern.css">
+</head>
+<body>
+    <!-- پس زمینه متحرک -->
+    <div class="background-shape shape-1"></div>
+    <div class="background-shape shape-2"></div>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="brand-logo">Sharif Lost&Found</div>
+            <h1 class="auth-title">خوش آمدید!</h1>
+            <p class="auth-subtitle">برای مدیریت آگهی‌های خود وارد شوید</p>
+
+            <form id="login-form">
+                <div class="input-group">
+                    <input type="email" id="email" class="form-input" placeholder="ایمیل دانشگاهی" required>
+                    <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="password" class="form-input" placeholder="رمز عبور" required>
+                    <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+
+                <button type="submit" class="submit-btn">ورود به حساب</button>
+            </form>
+
+            <div class="auth-footer">
+                حساب کاربری ندارید؟ <a href="signup.html" class="auth-link">ثبت نام کنید</a>
+                <br>
+                <a href="index.html" class="back-home">
+                    بازگشت به صفحه اصلی
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+</body>
+</html>

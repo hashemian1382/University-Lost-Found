@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ثبت آگهی جدید</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Sharif Lost&Found</div>
+        <div class="nav-links">
+            <a href="index.html" class="btn btn-outline">بازگشت</a>
+        </div>
+    </nav>
+
+    <div class="form-page">
+        <div class="form-card">
+            <h2 style="text-align:center; margin-bottom:20px;" id="form-title">ثبت آگهی جدید</h2>
+            
+            <form id="create-item-form">
+                <div class="form-group">
+                    <label class="form-label">عنوان</label>
+                    <input type="text" name="title" class="form-input" required placeholder="مثال: کیف پول">
+                </div>
+
+                <div class="form-group" style="display:flex; gap:10px;">
+                    <div style="flex:1">
+                        <label class="form-label">نوع</label>
+                        <select name="type" class="form-select">
+                            <option value="LOST">گمشده</option>
+                            <option value="FOUND">پیدا شده</option>
+                        </select>
+                    </div>
+                    <div style="flex:1">
+                        <label class="form-label">دسته</label>
+                        <select name="tag" class="form-select">
+                            <option value="1">الکترونیکی</option>
+                            <option value="2">مدارک</option>
+                            <option value="3">پوشاک</option>
+                            <option value="4">سایر</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">توضیحات</label>
+                    <textarea name="description" class="form-textarea"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">تصویر</label>
+                    <input type="file" name="image" class="form-input" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">موقعیت روی نقشه (الزامی)</label>
+                    <!-- ID اینجا form-map است -->
+                    <div id="form-map" style="height: 300px; width:100%; border-radius:8px; border:1px solid #ddd;"></div>
+                    <input type="hidden" name="latitude" id="lat">
+                    <input type="hidden" name="longitude" id="lng">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">ثبت آگهی</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

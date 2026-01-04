@@ -44,6 +44,10 @@
                         <option value="">همه دسته‌بندی‌ها</option>
                     </select>
                     
+                    <select id="author-filter" class="filter-select" onchange="app.updateFilter('author', this.value)">
+                        <option value="">همه ثبت‌کنندگان</option>
+                    </select>
+                    
                     <select id="sort-filter" class="filter-select" onchange="app.updateFilter('sort', this.value)">
                         <option value="newest">جدیدترین</option>
                         <option value="oldest">قدیمی‌ترین</option>

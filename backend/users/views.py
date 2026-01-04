@@ -20,6 +20,7 @@ class SendOTPView(views.APIView):
             email = serializer.validated_data['email']
             otp = OTPRequest.generate_otp()
             OTPRequest.objects.create(email=email, otp_code=otp)
+            print(f"\n========== KOD OTP: {otp} ==========\n")
             # In a real app, send email here.
             return Response({"message": "OTP sent", "otp_debug": otp}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -51,6 +52,8 @@ class SetPasswordView(views.APIView):
             email = serializer.validated_data['email']
             code = serializer.validated_data['otp_code']
             password = serializer.validated_data['password']
+            first_name = serializer.validated_data['first_name']
+            last_name = serializer.validated_data['last_name']
 
             otp_obj = OTPRequest.objects.filter(email=email, otp_code=code, is_verified=True).order_by('-created_at').first()
             
