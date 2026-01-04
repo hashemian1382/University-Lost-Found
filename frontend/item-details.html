@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جزئیات آگهی</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="assets/css/details.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="brand">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5"></path>
+                <path d="M12 19l-7-7 7-7"></path>
+            </svg>
+            <a href="index.html" style="margin-right:8px;">بازگشت به خانه</a>
+        </div>
+        <div>
+            <span class="user-badge" id="current-user-name"></span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="details-grid">
+            <div class="info-column">
+                <div class="card">
+                    <img id="item-image" src="" class="item-hero-img">
+                    
+                    <div class="content-padding">
+                        <div class="header-row">
+                            <span id="item-status" class="status-badge"></span>
+                            <span id="item-date" class="date-text"></span>
+                        </div>
+                        
+                        <h1 id="item-title" class="item-title"></h1>
+                        
+                        <div class="author-box">
+                            <div class="author-avatar">
+                                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </div>
+                            <div>
+                                <span class="label">ثبت کننده:</span>
+                                <div id="item-author" class="value"></div>
+                            </div>
+                        </div>
+
+                        <div id="item-tags" class="tags-container"></div>
+                        
+                        <hr class="divider">
+                        
+                        <h3 class="section-title">توضیحات</h3>
+                        <p id="item-desc" class="desc-text"></p>
+                    </div>
+                </div>
+
+                <div class="card chat-card">
+                    <h3 class="section-title">ارسال پیام به یابنده</h3>
+                    <textarea class="chat-input" placeholder="پیام خود را اینجا بنویسید... (این قابلیت به زودی فعال می‌شود)"></textarea>
+                    <button class="btn btn-primary" style="width:100%;" disabled>ارسال پیام</button>
+                </div>
+            </div>
+
+            <div class="map-column">
+                <div class="card map-card">
+                    <div id="detail-map"></div>
+                </div>
+                
+                <div class="card action-card">
+                    <button class="btn btn-danger" onclick="alert('گزارش تخلف ثبت شد.')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:8px;">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        گزارش محتوای نامناسب
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/details.js"></script>
+</body>
+</html>

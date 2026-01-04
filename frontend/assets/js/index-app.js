@@ -73,21 +73,16 @@ const app = {
         let result = this.allItems.filter(item => {
             const f = this.filters;
             
-            // 1. فیلتر نوع
             if (f.type !== 'ALL' && item.type !== f.type) return false;
             
-            // 2. فیلتر تگ (بسیار مهم: بررسی دقیق نوع داده)
             if (f.tag && f.tag !== "") {
                 const selectedTagId = Number(f.tag);
-                
-                // آیتم ممکن است tags (لیست ID) یا tags_details (لیست آبجکت) داشته باشد
                 const hasTagId = item.tags && item.tags.map(Number).includes(selectedTagId);
                 const hasTagObj = item.tags_details && item.tags_details.some(t => Number(t.id) === selectedTagId);
                 
                 if (!hasTagId && !hasTagObj) return false;
             }
             
-            // 3. فیلتر جستجو
             if (f.search) {
                 const term = f.search.toLowerCase();
                 const titleMatch = item.title.toLowerCase().includes(term);
@@ -98,7 +93,6 @@ const app = {
             return true;
         });
 
-        // مرتب‌سازی
         if (this.filters.sort === 'newest') {
             result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         } else {
@@ -204,6 +198,14 @@ const app = {
             item.tags_details.forEach(t => {
                 tagBox.innerHTML += `<span class="tag-pill" style="font-size:0.9rem;">#${t.name}</span>`;
             });
+        }
+
+        // --- دکمه جدید ---
+        const btn = document.getElementById('modal-details-btn');
+        if (btn) {
+            btn.onclick = () => {
+                window.location.href = `item-details.html?id=${item.id}`;
+            };
         }
 
         modal.classList.remove('hidden');
