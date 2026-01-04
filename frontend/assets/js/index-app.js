@@ -34,14 +34,14 @@ const app = {
             const select = document.getElementById('tag-filter');
             select.innerHTML = '<option value="">همه دسته‌بندی‌ها</option>';
             
-            if (Array.isArray(tags)) {
-                tags.forEach(tag => {
-                    const opt = document.createElement('option');
-                    opt.value = tag.id;
-                    opt.textContent = tag.name;
-                    select.appendChild(opt);
-                });
-            }
+            const tagsList = Array.isArray(tags) ? tags : (tags.results || []);
+
+            tagsList.forEach(tag => {
+                const opt = document.createElement('option');
+                opt.value = tag.id;
+                opt.textContent = tag.name;
+                select.appendChild(opt);
+            });
         } catch (e) {
             console.error('Tags loading failed', e);
         }
@@ -52,7 +52,8 @@ const app = {
         container.innerHTML = '<div style="text-align:center; padding:30px; color:#6b7280;">در حال دریافت اطلاعات...</div>';
 
         try {
-            this.allItems = await ApiService.getItems();
+            const response = await ApiService.getItems();
+            this.allItems = Array.isArray(response) ? response : (response.results || []);
             this.applyFilters();
         } catch (e) {
             container.innerHTML = '<div style="text-align:center; color:#ef4444;">خطا در برقراری ارتباط با سرور</div>';
@@ -72,12 +73,21 @@ const app = {
         let result = this.allItems.filter(item => {
             const f = this.filters;
             
+            // 1. فیلتر نوع
             if (f.type !== 'ALL' && item.type !== f.type) return false;
             
+            // 2. فیلتر تگ (بسیار مهم: بررسی دقیق نوع داده)
             if (f.tag && f.tag !== "") {
-                if (!item.tags.includes(parseInt(f.tag))) return false;
+                const selectedTagId = Number(f.tag);
+                
+                // آیتم ممکن است tags (لیست ID) یا tags_details (لیست آبجکت) داشته باشد
+                const hasTagId = item.tags && item.tags.map(Number).includes(selectedTagId);
+                const hasTagObj = item.tags_details && item.tags_details.some(t => Number(t.id) === selectedTagId);
+                
+                if (!hasTagId && !hasTagObj) return false;
             }
             
+            // 3. فیلتر جستجو
             if (f.search) {
                 const term = f.search.toLowerCase();
                 const titleMatch = item.title.toLowerCase().includes(term);
@@ -88,6 +98,7 @@ const app = {
             return true;
         });
 
+        // مرتب‌سازی
         if (this.filters.sort === 'newest') {
             result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         } else {
@@ -149,7 +160,7 @@ const app = {
                 <div class="card-info">
                     <span class="author-name">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        ${item.author_name || 'ناشناس'}
+                        ${item.author_name || 'کاربر'}
                     </span>
                     <span class="item-date">${dateStr}</span>
                 </div>
@@ -180,10 +191,8 @@ const app = {
         statusEl.style.color = item.type === 'LOST' ? '#ef4444' : '#10b981';
 
         const imgEl = document.getElementById('modal-image');
-        const imgUrl = item.image ? (item.image.startsWith('http') ? item.image : CONFIG.API_BASE_URL + item.image) : null;
-        
-        if (imgUrl) {
-            imgEl.src = imgUrl;
+        if (item.image) {
+            imgEl.src = item.image.startsWith('http') ? item.image : `${CONFIG.API_BASE_URL}${item.image}`;
             imgEl.style.display = 'block';
         } else {
             imgEl.style.display = 'none';
