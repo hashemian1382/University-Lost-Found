@@ -2,18 +2,12 @@ const app = {
     map: null,
     markers: L.layerGroup(),
     allItems: [],
-    filters: {
-        search: '',
-        tag: '',
-        type: 'ALL',
-        sort: 'newest'
-    },
+    filters: { search: '', tag: '', type: 'ALL', sort: 'newest' },
 
     init: async function() {
         this.initMap();
         await this.loadTags();
         await this.fetchItems();
-        
         document.getElementById('search-input').addEventListener('input', (e) => {
             this.updateFilter('search', e.target.value);
         });
@@ -21,9 +15,7 @@ const app = {
 
     initMap: function() {
         this.map = L.map('map', { zoomControl: false }).setView([35.7036, 51.3515], 16);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(this.map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.map);
         this.markers.addTo(this.map);
         L.control.zoom({ position: 'bottomleft' }).addTo(this.map);
     },
@@ -33,24 +25,19 @@ const app = {
             const tags = await ApiService.request(CONFIG.ENDPOINTS.TAGS);
             const select = document.getElementById('tag-filter');
             select.innerHTML = '<option value="">همه دسته‌بندی‌ها</option>';
-            
             const tagsList = Array.isArray(tags) ? tags : (tags.results || []);
-
             tagsList.forEach(tag => {
                 const opt = document.createElement('option');
                 opt.value = tag.id;
                 opt.textContent = tag.name;
                 select.appendChild(opt);
             });
-        } catch (e) {
-            console.error('Tags loading failed', e);
-        }
+        } catch (e) { console.error(e); }
     },
 
     fetchItems: async function() {
         const container = document.getElementById('items-list');
         container.innerHTML = '<div style="text-align:center; padding:30px; color:#6b7280;">در حال دریافت اطلاعات...</div>';
-
         try {
             const response = await ApiService.getItems();
             this.allItems = Array.isArray(response) ? response : (response.results || []);
@@ -72,32 +59,24 @@ const app = {
     applyFilters: function() {
         let result = this.allItems.filter(item => {
             const f = this.filters;
-            
             if (f.type !== 'ALL' && item.type !== f.type) return false;
-            
             if (f.tag && f.tag !== "") {
                 const selectedTagId = Number(f.tag);
                 const hasTagId = item.tags && item.tags.map(Number).includes(selectedTagId);
                 const hasTagObj = item.tags_details && item.tags_details.some(t => Number(t.id) === selectedTagId);
-                
                 if (!hasTagId && !hasTagObj) return false;
             }
-            
             if (f.search) {
                 const term = f.search.toLowerCase();
                 const titleMatch = item.title.toLowerCase().includes(term);
                 const descMatch = (item.description || '').toLowerCase().includes(term);
                 if (!titleMatch && !descMatch) return false;
             }
-
             return true;
         });
 
-        if (this.filters.sort === 'newest') {
-            result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        } else {
-            result.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-        }
+        if (this.filters.sort === 'newest') result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        else result.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
         this.renderList(result);
     },
@@ -108,14 +87,7 @@ const app = {
         this.markers.clearLayers();
 
         if (items.length === 0) {
-            container.innerHTML = `
-                <div style="text-align:center; padding:40px; color:#9ca3af; display:flex; flex-direction:column; align-items:center;">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:10px;">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    <span>موردی با این مشخصات یافت نشد</span>
-                </div>`;
+            container.innerHTML = `<div style="text-align:center; padding:40px; color:#9ca3af;">موردی یافت نشد</div>`;
             return;
         }
 
@@ -131,9 +103,10 @@ const app = {
         div.onclick = () => this.openModal(item);
 
         const isLost = item.type === 'LOST';
-        const imgUrl = item.image 
-            ? (item.image.startsWith('http') ? item.image : CONFIG.API_BASE_URL + item.image)
-            : 'https://via.placeholder.com/400x200?text=No+Image';
+        let imgUrl = 'assets/images/placeholder.png';
+        if (item.image) {
+            imgUrl = item.image.startsWith('http') ? item.image : `${CONFIG.API_BASE_URL}${item.image}`;
+        }
 
         const dateStr = new Date(item.created_at).toLocaleDateString('fa-IR', { month: 'long', day: 'numeric' });
         
@@ -144,7 +117,7 @@ const app = {
 
         div.innerHTML = `
             <div class="card-img-wrap">
-                <img src="${imgUrl}" class="card-img">
+                <img src="${imgUrl}" class="card-img" onerror="this.src='assets/images/placeholder.png'">
                 <span class="card-status ${isLost ? 'status-lost' : 'status-found'}">
                     ${isLost ? 'گمشده' : 'پیدا شده'}
                 </span>
@@ -187,10 +160,10 @@ const app = {
         const imgEl = document.getElementById('modal-image');
         if (item.image) {
             imgEl.src = item.image.startsWith('http') ? item.image : `${CONFIG.API_BASE_URL}${item.image}`;
-            imgEl.style.display = 'block';
         } else {
-            imgEl.style.display = 'none';
+            imgEl.src = 'assets/images/placeholder.png';
         }
+        imgEl.onerror = function() { this.src = 'assets/images/placeholder.png'; };
 
         const tagBox = document.getElementById('modal-tags');
         tagBox.innerHTML = '';
@@ -200,13 +173,8 @@ const app = {
             });
         }
 
-        // --- دکمه جدید ---
         const btn = document.getElementById('modal-details-btn');
-        if (btn) {
-            btn.onclick = () => {
-                window.location.href = `item-details.html?id=${item.id}`;
-            };
-        }
+        if (btn) btn.onclick = () => window.location.href = `item-details.html?id=${item.id}`;
 
         modal.classList.remove('hidden');
     },
@@ -216,6 +184,4 @@ const app = {
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    app.init();
-});
+document.addEventListener('DOMContentLoaded', () => { app.init(); });

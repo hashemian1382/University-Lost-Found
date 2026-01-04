@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // گرفتن ID از URL
     const urlParams = new URLSearchParams(window.location.search);
     const itemId = urlParams.get('id');
 
@@ -10,7 +9,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        // دریافت اطلاعات از API
         const item = await ApiService.request(`${CONFIG.ENDPOINTS.ITEMS}${itemId}/`);
         renderDetails(item);
         initDetailMap(item.latitude, item.longitude);
@@ -24,7 +22,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 function renderDetails(item) {
     document.title = item.title + ' - جزئیات';
     
-    // پر کردن متون
     setText('item-title', item.title);
     setText('item-desc', item.description || 'بدون توضیحات');
     setText('item-author', item.author_name || 'کاربر ناشناس');
@@ -32,21 +29,20 @@ function renderDetails(item) {
         year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
     }));
 
-    // وضعیت
     const statusEl = document.getElementById('item-status');
     const isLost = item.type === 'LOST';
     statusEl.textContent = isLost ? 'گمشده' : 'پیدا شده';
     statusEl.className = `status-badge ${isLost ? 'status-lost' : 'status-found'}`;
 
-    // تصویر
     const imgEl = document.getElementById('item-image');
     if (item.image) {
         imgEl.src = item.image.startsWith('http') ? item.image : `${CONFIG.API_BASE_URL}${item.image}`;
     } else {
-        imgEl.style.display = 'none';
+        imgEl.src = 'assets/images/placeholder.png';
     }
+    imgEl.style.display = 'block';
+    imgEl.onerror = function() { this.src = 'assets/images/placeholder.png'; };
 
-    // تگ‌ها
     const tagsContainer = document.getElementById('item-tags');
     if (item.tags_details) {
         item.tags_details.forEach(tag => {
@@ -68,10 +64,10 @@ function initDetailMap(lat, lng) {
 
     const map = L.map('detail-map', {
         zoomControl: false,
-        dragging: false,      // غیرفعال کردن حرکت نقشه برای حالت نمایشی
+        dragging: false,
         scrollWheelZoom: false,
         doubleClickZoom: false
-    }).setView([lat, lng], 18); // زوم بسیار بالا
+    }).setView([lat, lng], 18);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap'
@@ -80,10 +76,6 @@ function initDetailMap(lat, lng) {
     const color = document.getElementById('item-status').classList.contains('status-lost') ? '#ef4444' : '#10b981';
 
     L.circleMarker([lat, lng], {
-        color: 'white',
-        fillColor: color,
-        fillOpacity: 1,
-        radius: 12,
-        weight: 3
+        color: 'white', fillColor: color, fillOpacity: 1, radius: 12, weight: 3
     }).addTo(map);
 }

@@ -23,6 +23,11 @@ class ApiService {
             return;
         }
 
+        // هندل کردن پاسخ حذف (که معمولاً محتوا ندارد)
+        if (method === 'DELETE' && (response.status === 204 || response.status === 200)) {
+            return true;
+        }
+
         const data = await response.json();
         
         if (!response.ok) {
@@ -75,5 +80,9 @@ class ApiService {
     
     static async updateItem(id, formData) {
         return await this.request(`${CONFIG.ENDPOINTS.ITEMS}${id}/`, 'PATCH', formData, true);
+    }
+
+    static async deleteItem(id) {
+        return await this.request(`${CONFIG.ENDPOINTS.ITEMS}${id}/`, 'DELETE', null, true);
     }
 }

@@ -93,7 +93,7 @@ async function loadUserItems() {
         const user = await ApiService.getProfile();
         const currentUserId = user.id;
 
-        // دریافت همه آیتم‌ها و فیلتر کردن سمت کلاینت (برای اسپرینت ۱)
+        // دریافت همه آیتم‌ها
         const items = await ApiService.getItems();
         const allItems = Array.isArray(items) ? items : (items.results || []);
 
@@ -102,7 +102,7 @@ async function loadUserItems() {
 
         // آپدیت آمار
         document.getElementById('stat-total').textContent = myItems.length;
-        document.getElementById('stat-active').textContent = myItems.length; // فعلا همه اکتیو فرض میشن
+        document.getElementById('stat-active').textContent = myItems.length; 
 
         // فیلتر نوع (گمشده/پیداشده)
         if (filterType !== 'ALL') {
@@ -129,7 +129,10 @@ async function loadUserItems() {
                     </td>
                     <td>${date}</td>
                     <td>
-                        <a href="create-item.html?id=${item.id}" class="btn-primary" style="padding:4px 10px; border-radius:6px; font-size:0.8rem; text-decoration:none;">ویرایش</a>
+                        <div style="display:flex; gap:8px;">
+                            <a href="create-item.html?id=${item.id}" class="btn-primary" style="padding:4px 10px; border-radius:6px; font-size:0.8rem; text-decoration:none;">ویرایش</a>
+                            <button onclick="deleteUserItem(${item.id})" style="background:#fee2e2; color:#ef4444; border:1px solid #fca5a5; padding:4px 10px; border-radius:6px; font-size:0.8rem; font-weight:600; cursor:pointer;">حذف</button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -140,3 +143,17 @@ async function loadUserItems() {
         tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">خطا در دریافت اطلاعات</td></tr>';
     }
 }
+
+// تابع حذف آیتم (باید به window متصل شود تا از داخل HTML قابل دسترسی باشد)
+window.deleteUserItem = async function(itemId) {
+    if (!confirm('آیا از حذف این آگهی اطمینان دارید؟ این عملیات غیرقابل بازگشت است.')) return;
+
+    try {
+        await ApiService.deleteItem(itemId);
+        alert('آگهی با موفقیت حذف شد.');
+        loadUserItems(); // رفرش لیست
+    } catch (error) {
+        console.error(error);
+        alert('خطا در حذف آگهی.');
+    }
+};
