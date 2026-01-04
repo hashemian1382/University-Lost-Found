@@ -1,8 +1,10 @@
-:root {
-    --primary: #4f46e5;
-    --primary-hover: #4338ca;
+:root { 
+    --primary: #1B3B6F;      
+    --primary-hover: #142d55;
+    --accent: #E5B960;      
+    
     --bg-body: #f3f4f6;
-    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
     --text-main: #111827;
     --text-muted: #6b7280;
     --border: #e5e7eb;
