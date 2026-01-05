@@ -42,15 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 btn.textContent = 'ارسال کد...';
                 btn.disabled = true;
-                
-                const response = await ApiService.sendOtp(userEmail);
-                
-                if (response.otp_debug) {
-                    alert('کد تایید (تست): ' + response.otp_debug);
-                } else {
-                    alert('کد ارسال شد. ترمینال را چک کنید.');
-                }
-                
+                await ApiService.sendOtp(userEmail);
+                alert('کد تایید به ایمیل شما ارسال شد. لطفا صندوق ورودی یا اسپم را بررسی کنید.');
                 otpStep1.classList.add('hidden');
                 otpStep2.classList.remove('hidden');
             } catch (error) {

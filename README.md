@@ -63,12 +63,19 @@ A location-based platform designed to replace telegram groups for lost and found
     python manage.py createsuperuser # Create an admin account (Optional)
     ```
 
-5.  **Run the Server:**
+5.  **Configure environment:**
+    ```bash
+    cd backend
+    cp .env.example .env
+    # edit .env with your Gmail app password (enable 2FA + App Passwords)
+    ```
+
+6.  **Run the Server:**
     ```bash
     python manage.py runserver
     ```
 
-6.  **Access API Documentation:**
+7.  **Access API Documentation:**
     - Swagger UI: [http://127.0.0.1:8000/swagger/](http://127.0.0.1:8000/swagger/)
     - ReDoc: [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc/)
 

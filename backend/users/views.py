@@ -8,6 +8,7 @@ from .serializers import (
     SendOTPSerializer, VerifyOTPSerializer, 
     SetPasswordSerializer, UserProfileSerializer, ChangePasswordSerializer
 )
+from .utils import send_otp_email
 
 User = get_user_model()
 
@@ -18,9 +19,10 @@ class SendOTPView(views.APIView):
         if serializer.is_valid():
             email = serializer.validated_data['email']
             otp = OTPRequest.generate_otp()
-            print(f"\n========== KOD OTP: {otp} ==========\n")
             OTPRequest.objects.create(email=email, otp_code=otp)
-            return Response({"message": "OTP sent", "otp_debug": otp}, status=status.HTTP_200_OK)
+            if not send_otp_email(email, otp):
+                return Response({"error": "Failed to send OTP. Please try again."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"message": "OTP sent"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class VerifyOTPView(views.APIView):

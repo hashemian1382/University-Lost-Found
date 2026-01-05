@@ -39,8 +39,8 @@ class OTPRequest(models.Model):
     is_verified = models.BooleanField(default=False)
 
     def is_valid(self):
-        return True
-        #return timezone.now() < self.created_at + timezone.timedelta(minutes=5)
+        # Treat OTP as valid only within 5 minutes
+        return timezone.now() < self.created_at + timezone.timedelta(minutes=5)
 
     @staticmethod
     def generate_otp():
