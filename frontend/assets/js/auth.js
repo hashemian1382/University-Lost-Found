@@ -12,6 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let userEmail = '';
 
+    // تابع کمکی برای بررسی قدرت رمز عبور
+    function isPasswordStrong(password) {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        return regex.test(password);
+    }
+
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -61,6 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('signup-password').value;
             const firstName = document.getElementById('first-name').value;
             const lastName = document.getElementById('last-name').value;
+            
+            // اعتبارسنجی رمز عبور در سمت کلاینت
+            if (!isPasswordStrong(password)) {
+                alert('رمز عبور ضعیف است!\nباید حداقل ۸ کاراکتر و شامل حروف بزرگ، کوچک و عدد باشد.');
+                return;
+            }
+
             const btn = e.target.querySelector('button');
 
             try {
@@ -73,7 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = 'login.html';
             } catch (error) {
                 console.error(error);
-                alert('خطا در ثبت نام: ' + error.message);
+                // اگر بک‌ند ارور داد، متن ارور را نمایش می‌دهیم
+                let errorMsg = error.message;
+                if (error.response && error.response.password) {
+                    errorMsg = error.response.password[0];
+                }
+                alert('خطا در ثبت نام: ' + errorMsg);
                 btn.textContent = 'تکمیل ثبت نام';
                 btn.disabled = false;
             }

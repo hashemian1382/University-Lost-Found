@@ -44,6 +44,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const newPass = document.getElementById('new-pass').value;
         const confirmPass = document.getElementById('confirm-pass').value;
 
+        // اعتبارسنجی قدرت رمز عبور
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        if (!passwordRegex.test(newPass)) {
+            alert('رمز عبور جدید ضعیف است!\nباید حداقل ۸ کاراکتر و شامل حروف بزرگ، کوچک و عدد باشد.');
+            return;
+        }
+
         if (newPass !== confirmPass) {
             alert('رمز عبور جدید و تکرار آن مطابقت ندارند.');
             return;
@@ -62,7 +69,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.target.reset();
         } catch (error) {
             console.error(error);
-            alert('خطا: رمز عبور فعلی اشتباه است یا مشکلی پیش آمده.');
+            let errorMsg = 'رمز عبور فعلی اشتباه است یا مشکلی پیش آمده.';
+            // نمایش ارور خاص بک‌ند اگر وجود داشته باشد
+            if (error.new_password) {
+                errorMsg = error.new_password[0];
+            }
+            alert(errorMsg);
         } finally {
             btn.textContent = originalText;
             btn.disabled = false;
@@ -144,7 +156,7 @@ async function loadUserItems() {
     }
 }
 
-// تابع حذف آیتم (باید به window متصل شود تا از داخل HTML قابل دسترسی باشد)
+// تابع حذف آیتم
 window.deleteUserItem = async function(itemId) {
     if (!confirm('آیا از حذف این آگهی اطمینان دارید؟ این عملیات غیرقابل بازگشت است.')) return;
 
