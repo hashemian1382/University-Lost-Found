@@ -147,26 +147,29 @@ You can view the full interactive documentation at:
 ```text
 root/
 ├── backend/
-│   ├── interactions/     # Comments & Reports logic
-│   ├── items/            # Lost & Found Items logic
-│   ├── users/            # Auth & Profile logic
+│   ├── core/                 # Items & Tags models/views
+│   ├── interactions/         # Comments & Reports logic
+│   ├── users/                # Auth & Profile logic
+│   ├── lost_found_project/   # Main project settings & URLs
 │   ├── manage.py
 │   └── requirements.txt
 │
 └── frontend/
     ├── assets/
-    │   ├── css/          # Stylesheets
-    │   ├── js/           # Logic (api.js, details.js, maps.js)
-    │   └── images/
-    ├── index.html        # Main Map View
-    ├── item-det # Single Item View
-    └── login.html        # Auth Pages
+    │   ├── css/              # Stylesheets
+    │   ├── js/               # Logic (api.js, details.js, config.js)
+    │   └── images/           # Static assets
+    ├── index.html            # Main Map View
+    ├── item-details.html     # Single Item View
+    ├── create-item.html      # Post New Item
+    ├── profile.html          # User Dashboard
+    ├── login.html            # Login Page
+    └── signup.html           # Registration Page
+```
 
 ---
 
 <p align="center">
   <b>Developed by Team 10</b><br>
   University Lost & Found Project
-</p>
-ect
 </p>
