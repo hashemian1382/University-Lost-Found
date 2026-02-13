@@ -1,3 +1,4 @@
+# backend\interactions\serializers.py
 from rest_framework import serializers
 from django.contrib.contenttypes.models import ContentType
 from .models import Comment, Report
@@ -10,15 +11,21 @@ class RecursiveField(serializers.Serializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author_email = serializers.ReadOnlyField(source='author.email')
+    author_name = serializers.SerializerMethodField()
     replies = RecursiveField(many=True, read_only=True)
 
     class Meta:
         model = Comment
-        fields = ['id', 'item', 'author_email', 'text', 'parent', 'created_at', 'replies']
+        fields = ['id', 'item', 'author_email', 'author_name', 'text', 'parent', 'created_at', 'replies']
         read_only_fields = ['author_email', 'created_at', 'replies']
 
+    def get_author_name(self, obj):
+        if obj.author.first_name and obj.author.last_name:
+            return f"{obj.author.first_name} {obj.author.last_name}"
+        return obj.author.email.split('@')[0]
+
 class ReportSerializer(serializers.ModelSerializer):
-    content_type_str = serializers.CharField(write_only=True) # 'item' or 'comment'
+    content_type_str = serializers.CharField(write_only=True)
     
     class Meta:
         model = Report

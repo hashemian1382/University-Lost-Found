@@ -6,3 +6,5 @@ urlpatterns = [
     path('items/<int:item_id>/comments/', ItemCommentsListView.as_view(), name='item-comments'),
     path('report/', ReportCreateView.as_view(), name='report-content'),
 ]
+
+

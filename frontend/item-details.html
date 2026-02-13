@@ -1,3 +1,4 @@
+<!-- frontend/item-details.html -->
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -24,6 +25,7 @@
     <div class="container">
         <div class="details-grid">
             <div class="info-column">
+                <!-- کارت اطلاعات اصلی -->
                 <div class="card">
                     <img id="item-image" src="" class="item-hero-img">
                     
@@ -54,10 +56,20 @@
                     </div>
                 </div>
 
+                <!-- کارت نظرات (تغییر یافته) -->
                 <div class="card chat-card">
-                    <h3 class="section-title">ارسال پیام به یابنده</h3>
-                    <textarea class="chat-input" placeholder="پیام خود را اینجا بنویسید... (این قابلیت به زودی فعال می‌شود)"></textarea>
-                    <button class="btn btn-primary" style="width:100%;" disabled>ارسال پیام</button>
+                    <h3 class="section-title">گفتگو و نظرات</h3>
+                    
+                    <!-- لیست کامنت‌ها -->
+                    <div id="comments-list" class="comments-container">
+                        <div class="loading-spinner">در حال بارگذاری نظرات...</div>
+                    </div>
+
+                    <!-- فرم ارسال نظر -->
+                    <div class="comment-form">
+                        <textarea id="comment-text" class="chat-input" placeholder="نظر یا پیام خود را اینجا بنویسید..."></textarea>
+                        <button id="btn-submit-comment" class="btn btn-primary" style="width:100%;">ارسال پیام</button>
+                    </div>
                 </div>
             </div>
 

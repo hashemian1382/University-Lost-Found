@@ -19,6 +19,7 @@ class SendOTPView(views.APIView):
         if serializer.is_valid():
             email = serializer.validated_data['email']
             otp = OTPRequest.generate_otp()
+            print(otp)
             OTPRequest.objects.create(email=email, otp_code=otp)
             if not send_otp_email(email, otp):
                 return Response({"error": "Failed to send OTP. Please try again."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

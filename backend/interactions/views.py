@@ -1,7 +1,6 @@
-from rest_framework import generics, permissions, exceptions
+from rest_framework import generics, permissions
 from .models import Comment, Report
 from .serializers import CommentSerializer, ReportSerializer
-from core.models import Item
 
 class CommentCreateView(generics.CreateAPIView):
     queryset = Comment.objects.all()
@@ -17,7 +16,6 @@ class ItemCommentsListView(generics.ListAPIView):
 
     def get_queryset(self):
         item_id = self.kwargs['item_id']
-        # Only fetch top-level comments; serializer handles recursion
         return Comment.objects.filter(item_id=item_id, parent__isnull=True).order_by('-created_at')
 
 class ReportCreateView(generics.CreateAPIView):

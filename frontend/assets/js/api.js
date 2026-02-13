@@ -1,3 +1,4 @@
+// frontend/assets/js/api.js
 class ApiService {
     static getHeaders(auth = false, multipart = false) {
         const headers = {};
@@ -13,27 +14,36 @@ class ApiService {
             method,
             headers: this.getHeaders(auth, isMultipart)
         };
-        if (body) options.body = isMultipart ? body : JSON.stringify(body);
-
-        const response = await fetch(`${CONFIG.API_BASE_URL}${url}`, options);
         
-        if (response.status === 401) {
-            localStorage.clear();
-            window.location.href = 'login.html';
-            return;
+        if (body) {
+            options.body = isMultipart ? body : JSON.stringify(body);
         }
 
-        // هندل کردن پاسخ حذف (که معمولاً محتوا ندارد)
-        if (method === 'DELETE' && (response.status === 204 || response.status === 200)) {
-            return true;
-        }
+        const fullUrl = `${CONFIG.API_BASE_URL}${url}`;
 
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(JSON.stringify(data));
+        try {
+            const response = await fetch(fullUrl, options);
+            
+            if (response.status === 401) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+                return;
+            }
+
+            if (response.status === 204) {
+                return true;
+            }
+
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(JSON.stringify(data));
+            }
+            return data;
+        } catch (error) {
+            console.error('API Request Error:', error);
+            throw error;
         }
-        return data;
     }
 
     static async login(email, password) {
@@ -84,5 +94,13 @@ class ApiService {
 
     static async deleteItem(id) {
         return await this.request(`${CONFIG.ENDPOINTS.ITEMS}${id}/`, 'DELETE', null, true);
+    }
+
+    static async getItemComments(itemId) {
+        return await this.request(`${CONFIG.ENDPOINTS.ITEMS}${itemId}/comments/`, 'GET');
+    }
+
+    static async addComment(data) {
+        return await this.request(CONFIG.ENDPOINTS.COMMENTS_ADD, 'POST', data, true);
     }
 }
