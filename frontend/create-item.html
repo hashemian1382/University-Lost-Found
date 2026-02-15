@@ -1,6 +1,4 @@
-<!-- ==================================================
-     FILE: frontend/create-item.html
-     ================================================== -->
+<!-- frontend/create-item.html -->
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -10,7 +8,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* اضافه کردن استایل دکمه مکان‌یابی به صورت داخلی چون style.css در دسترس نیست */
         .geo-btn {
             position: absolute;
             bottom: 20px;
@@ -30,6 +27,40 @@
         }
         .geo-btn:hover {
             background: #f0f0f0;
+        }
+        
+        /* استایل‌های جدید برای انتخاب تگ مدرن */
+        .tags-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 5px 0;
+            min-height: 42px;
+        }
+        
+        .tag-chip {
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            color: #374151;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .tag-chip:hover {
+            background-color: #e5e7eb;
+        }
+        
+        .tag-chip.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
         }
     </style>
 </head>
@@ -59,12 +90,15 @@
                             <option value="FOUND">پیدا شده</option>
                         </select>
                     </div>
-                    <div style="flex:1">
-                        <label class="form-label">دسته بندی</label>
-                        <select name="tags" id="tag-select" class="form-select" required>
-                            <option value="">در حال بارگذاری...</option>
-                        </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">دسته‌بندی‌ها</label>
+                    <div id="tags-container" class="tags-wrapper">
+                        <span style="font-size:0.8rem; color:#9ca3af;">در حال بارگذاری تگ‌ها...</span>
                     </div>
+                    <!-- تگ سلکت مخفی برای ارسال استاندارد فرم -->
+                    <select name="tags" id="hidden-tag-select" multiple style="display:none;"></select>
                 </div>
 
                 <div class="form-group">
@@ -81,7 +115,6 @@
                     <label class="form-label">موقعیت روی نقشه (الزامی)</label>
                     <div style="position: relative;">
                         <div id="form-map" style="height: 300px; width:100%; border-radius:8px; border:1px solid #ddd;"></div>
-                        <!-- دکمه مکان فعلی من -->
                         <button type="button" id="locate-btn" class="geo-btn" title="مکان فعلی من">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="10"></circle>

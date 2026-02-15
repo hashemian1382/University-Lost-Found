@@ -1,6 +1,4 @@
-// ==================================================
-// FILE: frontend/assets/js/app.js
-// ==================================================
+// frontend/assets/js/app.js
 let mainMap;
 let formMap;
 let markersLayer;
@@ -9,11 +7,9 @@ let formMarker;
 document.addEventListener('DOMContentLoaded', () => {
     checkAuthUI();
 
-    // تشخیص صفحه
     const mapElement = document.getElementById('map');
     const formMapElement = document.getElementById('form-map');
 
-    // --- حالت ۱: صفحه اصلی (اگر index.html از app.js استفاده کند) ---
     if (mapElement && !formMapElement) {
         initMainMap();
         loadItems();
@@ -26,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- حالت ۲: صفحه ثبت/ویرایش آیتم ---
     if (formMapElement) {
         if (!localStorage.getItem('access_token')) {
             window.location.href = 'login.html';
@@ -40,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (form) {
             form.addEventListener('submit', handleItemSubmit);
             
-            // چک کردن برای ویرایش
             const urlParams = new URLSearchParams(window.location.search);
             const editId = urlParams.get('id');
             if (editId) {
@@ -51,21 +45,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// --- توابع مشترک یا مربوط به فرم ---
-
 async function loadTagsForForm() {
     try {
         const response = await ApiService.request(CONFIG.ENDPOINTS.TAGS);
         const tags = Array.isArray(response) ? response : (response.results || []);
         
-        const select = document.getElementById('tag-select');
-        if(select) {
-            select.innerHTML = '';
+        const container = document.getElementById('tags-container');
+        const hiddenSelect = document.getElementById('hidden-tag-select');
+        
+        if(container && hiddenSelect) {
+            container.innerHTML = '';
+            hiddenSelect.innerHTML = '';
+
             tags.forEach(tag => {
-                const opt = document.createElement('option');
-                opt.value = tag.id;
-                opt.textContent = tag.name;
-                select.appendChild(opt);
+                const chip = document.createElement('div');
+                chip.className = 'tag-chip';
+                chip.textContent = tag.name;
+                chip.dataset.id = tag.id;
+                
+                const option = document.createElement('option');
+                option.value = tag.id;
+                option.textContent = tag.name;
+                hiddenSelect.appendChild(option);
+
+                chip.addEventListener('click', () => {
+                    chip.classList.toggle('active');
+                    option.selected = chip.classList.contains('active');
+                });
+
+                container.appendChild(chip);
             });
         }
     } catch (error) {
@@ -78,7 +86,6 @@ function initFormMap() {
     formMap = L.map('form-map').setView(SHARIF_COORDS, 16);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'OpenStreetMap' }).addTo(formMap);
     
-    // فیکس رندر
     setTimeout(() => { formMap.invalidateSize(); }, 200);
 
     formMap.on('click', function(e) {
@@ -89,7 +96,6 @@ function initFormMap() {
         document.getElementById('lng').value = e.latlng.lng;
     });
 
-    // هندلر دکمه موقعیت مکانی
     const locateBtn = document.getElementById('locate-btn');
     if (locateBtn) {
         locateBtn.addEventListener('click', () => {
@@ -106,14 +112,11 @@ function initFormMap() {
                 (position) => {
                     const { latitude, longitude } = position.coords;
                     
-                    // حرکت نقشه به موقعیت کاربر
                     formMap.flyTo([latitude, longitude], 17);
 
-                    // آپدیت مارکر
                     if (formMarker) formMap.removeLayer(formMarker);
                     formMarker = L.marker([latitude, longitude]).addTo(formMap);
 
-                    // پر کردن اینپوت‌ها
                     document.getElementById('lat').value = latitude;
                     document.getElementById('lng').value = longitude;
                     
@@ -171,13 +174,27 @@ async function loadItemForEdit(id) {
         form.querySelector('[name="description"]').value = item.description;
         form.querySelector('[name="type"]').value = item.type;
         
-        // هندل کردن تگ
-        const tagSelect = document.getElementById('tag-select');
-        if(tagSelect.options.length <= 1) {
+        const container = document.getElementById('tags-container');
+        const hiddenSelect = document.getElementById('hidden-tag-select');
+        
+        if(container.children.length === 0) {
             await loadTagsForForm();
         }
+
         if (item.tags && item.tags.length > 0) {
-            tagSelect.value = item.tags[0];
+            const selectedIds = item.tags.map(String);
+            
+            Array.from(container.children).forEach(chip => {
+                if (selectedIds.includes(chip.dataset.id)) {
+                    chip.classList.add('active');
+                }
+            });
+
+            Array.from(hiddenSelect.options).forEach(opt => {
+                if (selectedIds.includes(opt.value)) {
+                    opt.selected = true;
+                }
+            });
         }
 
         document.getElementById('lat').value = item.latitude;
@@ -204,8 +221,6 @@ async function loadItemForEdit(id) {
         alert('خطا در دریافت اطلاعات آیتم');
     }
 }
-
-// --- توابع مربوط به صفحه اصلی (اگر استفاده شود) ---
 
 function initMainMap() {
     const SHARIF_COORDS = [35.7036, 51.3515];

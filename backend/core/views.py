@@ -1,3 +1,4 @@
+# backend/core/views.py
 from rest_framework import viewsets, permissions, filters, generics
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Item, Tag
@@ -14,7 +15,10 @@ class ItemViewSet(viewsets.ModelViewSet):
     serializer_class = ItemSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = {'tags': ['exact'], 'type': ['exact']}
+    filterset_fields = {
+        'tags': ['exact', 'in'],
+        'type': ['exact']
+    }
     search_fields = ['title', 'description']
 
     def perform_create(self, serializer):
@@ -23,7 +27,6 @@ class ItemViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         
-        # Geo-filtering logic (simple box approximation)
         min_lat = self.request.query_params.get('min_lat')
         max_lat = self.request.query_params.get('max_lat')
         min_lon = self.request.query_params.get('min_lon')

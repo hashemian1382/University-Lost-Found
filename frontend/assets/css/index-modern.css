@@ -46,22 +46,101 @@ button { cursor: pointer; border: none; outline: none; font-family: inherit; }
 
 .sidebar-header { padding: 24px; background: var(--bg-surface); z-index: 10; border-bottom: 1px solid var(--border); }
 
-.search-container { position: relative; margin-bottom: 20px; }
+.search-container { position: relative; margin-bottom: 16px; }
 .search-input {
-    width: 100%; padding: 16px 20px 16px 50px; border: 2px solid transparent; border-radius: var(--radius);
+    width: 100%; padding: 14px 20px 14px 50px; border: 2px solid transparent; border-radius: var(--radius);
     background: #f3f4f6; font-size: 1rem; color: var(--text-main); transition: 0.3s;
 }
 .search-input:focus { background: white; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); outline: none; }
 .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
 
-.filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-.filter-select {
-    width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border);
-    background: white; font-size: 0.9rem; color: var(--text-main); cursor: pointer;
-    transition: 0.2s; -webkit-appearance: none;
+/* Filter Toolbar Styles - FIX FOR SCROLLING */
+.filter-toolbar {
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    margin-bottom: 16px;
+    background: #fff; 
+    border: 1px solid var(--border); 
+    border-radius: 14px; 
+    padding: 6px 8px;
+    width: 100%;
 }
-.filter-select:hover { border-color: #d1d5db; }
-.filter-select:focus { border-color: var(--primary); outline: none; }
+
+.sort-section {
+    display: flex;
+    align-items: center;
+    position: relative;
+    flex-shrink: 0; /* جلوگیری از جمع شدن بخش مرتب‌سازی */
+}
+
+.sort-icon {
+    position: absolute; 
+    right: 8px; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    pointer-events: none; 
+    color: #6b7280;
+}
+
+.sort-select {
+    padding: 8px 12px 8px 32px; 
+    border: none; 
+    background: transparent;
+    font-size: 0.9rem; 
+    font-weight: 600; 
+    color: var(--text-main); 
+    cursor: pointer;
+    -webkit-appearance: none; 
+    outline: none;
+    min-width: 100px;
+}
+
+.vertical-divider { 
+    width: 1px; 
+    height: 24px; 
+    background: var(--border); 
+    flex-shrink: 0;
+}
+
+/* Wrapper to force flex child to respect width */
+.tags-wrapper-outer {
+    flex-grow: 1;
+    min-width: 0; /* حیاتی برای اسکرول شدن در فلکس باکس */
+    overflow: hidden; /* مخفی کردن سرریز والد */
+}
+
+.tags-scroll-container {
+    display: flex; 
+    gap: 8px; 
+    overflow-x: auto; 
+    padding: 4px 2px;
+    white-space: nowrap;
+    -ms-overflow-style: none; 
+    scrollbar-width: none;
+    align-items: center;
+}
+.tags-scroll-container::-webkit-scrollbar { display: none; }
+
+.tag-chip {
+    flex-shrink: 0; 
+    padding: 6px 14px; 
+    border-radius: 20px; 
+    font-size: 0.8rem;
+    background: #f3f4f6; 
+    color: var(--text-muted); 
+    cursor: pointer; 
+    transition: 0.2s;
+    border: 1px solid transparent; 
+    font-weight: 500;
+}
+.tag-chip:hover { background: #e5e7eb; color: var(--text-main); }
+.tag-chip.active {
+    background: var(--primary); 
+    color: white; 
+    border-color: var(--primary); 
+    box-shadow: 0 2px 4px rgba(27, 59, 111, 0.2);
+}
 
 .tabs { display: flex; background: #f3f4f6; padding: 5px; border-radius: 12px; }
 .tab {
@@ -107,7 +186,6 @@ button { cursor: pointer; border: none; outline: none; font-family: inherit; }
 .map-area { flex: 1; position: relative; height: 100%; }
 #map { width: 100%; height: 100%; z-index: 1; }
 
-/* Geo Button Style */
 .geo-btn {
     position: absolute;
     bottom: 30px;

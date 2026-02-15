@@ -55,15 +55,33 @@
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                 </div>
-                <div class="filter-grid">
-                    <select id="tag-filter" class="filter-select" onchange="app.updateFilter('tag', this.value)">
-                        <option value="">همه دسته‌بندی‌ها</option>
-                    </select>
-                    <select id="sort-filter" class="filter-select" onchange="app.updateFilter('sort', this.value)">
-                        <option value="newest">جدیدترین</option>
-                        <option value="oldest">قدیمی‌ترین</option>
-                    </select>
+                
+                <!-- نوار ابزار جدید: شامل مرتب‌سازی و تگ‌ها -->
+                <div class="filter-toolbar">
+                    <!-- بخش مرتب‌سازی (ثابت) -->
+                    <div class="sort-section">
+                        <svg class="sort-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="21" y1="10" x2="3" y2="10"></line>
+                            <line x1="21" y1="6" x2="3" y2="6"></line>
+                            <line x1="21" y1="14" x2="3" y2="14"></line>
+                            <line x1="21" y1="18" x2="3" y2="18"></line>
+                        </svg>
+                        <select id="sort-filter" class="sort-select" onchange="app.updateFilter('sort', this.value)">
+                            <option value="newest">جدیدترین</option>
+                            <option value="oldest">قدیمی‌ترین</option>
+                        </select>
+                    </div>
+
+                    <div class="vertical-divider"></div>
+
+                    <!-- بخش تگ‌ها (اسکرول شونده) -->
+                    <div class="tags-wrapper-outer">
+                        <div id="tags-scroll-container" class="tags-scroll-container">
+                            <!-- تگ‌ها توسط JS اینجا قرار می‌گیرند -->
+                        </div>
+                    </div>
                 </div>
+
                 <div class="tabs">
                     <div class="tab active" onclick="app.updateFilter('type', 'ALL')">همه آگهی‌ها</div>
                     <div class="tab" onclick="app.updateFilter('type', 'LOST')">گمشده‌ها</div>
@@ -74,7 +92,6 @@
         </aside>
         <main class="map-area">
             <div id="map"></div>
-            <!-- دکمه مکان فعلی من -->
             <button id="locate-btn-index" class="geo-btn" title="مکان فعلی من">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>

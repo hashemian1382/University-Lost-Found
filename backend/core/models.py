@@ -26,7 +26,7 @@ class Item(models.Model):
     type = models.CharField(max_length=5, choices=TYPE_CHOICES)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='ACTIVE')
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='items')
-    tags = models.ManyToManyField(Tag, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True, related_name='items')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
