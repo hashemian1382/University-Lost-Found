@@ -1,3 +1,6 @@
+<!-- ==================================================
+     FILE: frontend/index.html
+     ================================================== -->
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -24,7 +27,6 @@
             <div id="user-links" class="hidden" style="display: flex; align-items: center; gap: 10px;">
                 <a href="create-item.html" class="btn btn-primary">ثبت آگهی جدید +</a>
                 
-                <!-- دکمه پروفایل جدید -->
                 <a href="profile.html" class="btn btn-outline" style="padding: 8px 12px; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;" title="پروفایل من">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -44,7 +46,6 @@
     </nav>
 
     <div class="app-container">
-        <!-- بقیه کدها مثل قبل دست نخورده باقی می‌ماند -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="search-container">
@@ -73,6 +74,16 @@
         </aside>
         <main class="map-area">
             <div id="map"></div>
+            <!-- دکمه مکان فعلی من -->
+            <button id="locate-btn-index" class="geo-btn" title="مکان فعلی من">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="22" y1="12" x2="18" y2="12"></line>
+                    <line x1="6" y1="12" x2="2" y2="12"></line>
+                    <line x1="12" y1="6" x2="12" y2="2"></line>
+                    <line x1="12" y1="22" x2="12" y2="18"></line>
+                </svg>
+            </button>
         </main>
     </div>
 

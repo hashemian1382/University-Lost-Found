@@ -1,3 +1,6 @@
+// ==================================================
+// FILE: frontend/assets/js/app.js
+// ==================================================
 let mainMap;
 let formMap;
 let markersLayer;
@@ -85,6 +88,46 @@ function initFormMap() {
         document.getElementById('lat').value = e.latlng.lat;
         document.getElementById('lng').value = e.latlng.lng;
     });
+
+    // هندلر دکمه موقعیت مکانی
+    const locateBtn = document.getElementById('locate-btn');
+    if (locateBtn) {
+        locateBtn.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                alert('مرورگر شما از موقعیت مکانی پشتیبانی نمی‌کند.');
+                return;
+            }
+
+            const icon = locateBtn.querySelector('svg');
+            const originalColor = locateBtn.style.color;
+            locateBtn.style.color = 'var(--primary, blue)'; 
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    
+                    // حرکت نقشه به موقعیت کاربر
+                    formMap.flyTo([latitude, longitude], 17);
+
+                    // آپدیت مارکر
+                    if (formMarker) formMap.removeLayer(formMarker);
+                    formMarker = L.marker([latitude, longitude]).addTo(formMap);
+
+                    // پر کردن اینپوت‌ها
+                    document.getElementById('lat').value = latitude;
+                    document.getElementById('lng').value = longitude;
+                    
+                    locateBtn.style.color = originalColor;
+                },
+                (error) => {
+                    console.error(error);
+                    alert('دسترسی به موقعیت مکانی داده نشد یا خطایی رخ داد.');
+                    locateBtn.style.color = originalColor;
+                },
+                { enableHighAccuracy: true }
+            );
+        });
+    }
 }
 
 async function handleItemSubmit(e) {

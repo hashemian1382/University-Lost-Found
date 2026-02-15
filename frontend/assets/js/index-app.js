@@ -1,6 +1,10 @@
+// ==================================================
+// FILE: frontend/assets/js/index-app.js
+// ==================================================
 const app = {
     map: null,
     markers: L.layerGroup(),
+    userLocationMarker: null,
     allItems: [],
     filters: { search: '', tag: '', type: 'ALL', sort: 'newest' },
 
@@ -18,6 +22,53 @@ const app = {
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(this.map);
         this.markers.addTo(this.map);
         L.control.zoom({ position: 'bottomleft' }).addTo(this.map);
+
+        // هندلر دکمه موقعیت مکانی
+        const locateBtn = document.getElementById('locate-btn-index');
+        if (locateBtn) {
+            locateBtn.addEventListener('click', () => {
+                if (!navigator.geolocation) {
+                    alert('مرورگر شما از موقعیت مکانی پشتیبانی نمی‌کند.');
+                    return;
+                }
+                
+                // تغییر استایل دکمه هنگام جستجو
+                const originalColor = locateBtn.style.color;
+                locateBtn.style.color = '#1B3B6F';
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords;
+                        
+                        // حرکت به مختصات کاربر
+                        this.map.flyTo([latitude, longitude], 17);
+
+                        // نمایش مارکر موقعیت کاربر (متفاوت از پین‌های آیتم‌ها)
+                        if (this.userLocationMarker) {
+                            this.map.removeLayer(this.userLocationMarker);
+                        }
+
+                        this.userLocationMarker = L.circleMarker([latitude, longitude], {
+                            color: '#ffffff',
+                            fillColor: '#3b82f6', // آبی
+                            fillOpacity: 1,
+                            radius: 8,
+                            weight: 3
+                        }).addTo(this.map);
+                        
+                        this.userLocationMarker.bindPopup("مکان شما").openPopup();
+                        
+                        locateBtn.style.color = originalColor;
+                    },
+                    (error) => {
+                        console.error(error);
+                        alert('دسترسی به موقعیت مکانی داده نشد یا خطایی رخ داد.');
+                        locateBtn.style.color = originalColor;
+                    },
+                    { enableHighAccuracy: true }
+                );
+            });
+        }
     },
 
     loadTags: async function() {
@@ -85,6 +136,8 @@ const app = {
         const container = document.getElementById('items-list');
         container.innerHTML = '';
         this.markers.clearLayers();
+        // اگر لوکیشن کاربر ست شده، آن را پاک نکنیم اما در این تابع markersLayer فقط برای آیتم‌هاست
+        // userLocationMarker در initMap هندل شده و مستقل است.
 
         if (items.length === 0) {
             container.innerHTML = `<div style="text-align:center; padding:40px; color:#9ca3af;">موردی یافت نشد</div>`;

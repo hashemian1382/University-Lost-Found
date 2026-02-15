@@ -1,3 +1,6 @@
+<!-- ==================================================
+     FILE: frontend/create-item.html
+     ================================================== -->
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -6,6 +9,29 @@
     <title>ثبت آگهی جدید</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* اضافه کردن استایل دکمه مکان‌یابی به صورت داخلی چون style.css در دسترس نیست */
+        .geo-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+            border: 1px solid #ccc;
+            transition: all 0.2s;
+        }
+        .geo-btn:hover {
+            background: #f0f0f0;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -35,7 +61,6 @@
                     </div>
                     <div style="flex:1">
                         <label class="form-label">دسته بندی</label>
-                        <!-- تغییر مهم: name="tags" باید باشد نه tag -->
                         <select name="tags" id="tag-select" class="form-select" required>
                             <option value="">در حال بارگذاری...</option>
                         </select>
@@ -54,7 +79,19 @@
 
                 <div class="form-group">
                     <label class="form-label">موقعیت روی نقشه (الزامی)</label>
-                    <div id="form-map" style="height: 300px; width:100%; border-radius:8px; border:1px solid #ddd;"></div>
+                    <div style="position: relative;">
+                        <div id="form-map" style="height: 300px; width:100%; border-radius:8px; border:1px solid #ddd;"></div>
+                        <!-- دکمه مکان فعلی من -->
+                        <button type="button" id="locate-btn" class="geo-btn" title="مکان فعلی من">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="22" y1="12" x2="18" y2="12"></line>
+                                <line x1="6" y1="12" x2="2" y2="12"></line>
+                                <line x1="12" y1="6" x2="12" y2="2"></line>
+                                <line x1="12" y1="22" x2="12" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
                     <input type="hidden" name="latitude" id="lat">
                     <input type="hidden" name="longitude" id="lng">
                 </div>
