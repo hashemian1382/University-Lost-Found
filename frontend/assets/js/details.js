@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         initDetailMap(item.latitude, item.longitude);
         
         loadComments(itemId);
+        setupReportModal(itemId);
         
         const submitBtn = document.getElementById('btn-submit-comment');
         if (submitBtn) {
@@ -27,6 +28,40 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = 'index.html';
     }
 });
+
+let reportTarget = { type: null, id: null };
+
+function setupReportModal(itemId) {
+    const modal = document.getElementById('report-modal');
+    const btnCancel = document.getElementById('btn-cancel-report');
+    const btnConfirm = document.getElementById('btn-confirm-report');
+    const itemReportBtn = document.getElementById('btn-report-item');
+
+    itemReportBtn.onclick = () => {
+        reportTarget = { type: 'item', id: itemId };
+        modal.style.display = 'flex';
+    };
+
+    btnCancel.onclick = () => {
+        modal.style.display = 'none';
+    };
+
+    btnConfirm.onclick = async () => {
+        const reason = document.getElementById('report-reason').value;
+        try {
+            await ApiService.submitReport(reportTarget.type, reportTarget.id, reason);
+            alert('گزارش شما با موفقیت ثبت شد.');
+            modal.style.display = 'none';
+        } catch (error) {
+            alert('خطا در ثبت گزارش. ممکن است قبلاً گزارش داده باشید.');
+        }
+    };
+}
+
+function openCommentReport(commentId) {
+    reportTarget = { type: 'comment', id: commentId };
+    document.getElementById('report-modal').style.display = 'flex';
+}
 
 function renderDetails(item) {
     document.title = item.title + ' - جزئیات';
@@ -128,12 +163,24 @@ function createCommentElement(comment) {
 
     const div = document.createElement('div');
     div.className = 'comment-item';
+    
+    const isHidden = comment.text.includes("[This comment has been hidden");
+    
     div.innerHTML = `
-        <div class="comment-header">
-            <span class="comment-author">${comment.author_name || 'کاربر ناشناس'}</span>
-            <span style="font-size:0.8rem; color:#888;">${dateStr}</span>
+        <div class="comment-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <span class="comment-author">${comment.author_name || 'کاربر ناشناس'}</span>
+                <span style="font-size:0.8rem; color:#888;">${dateStr}</span>
+            </div>
+            ${!isHidden ? `
+            <button class="comment-report-btn" onclick="openCommentReport(${comment.id})" title="گزارش">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                    <line x1="4" y1="22" x2="4" y2="15"></line>
+                </svg>
+            </button>` : ''}
         </div>
-        <div class="comment-body">${comment.text}</div>
+        <div class="comment-body" style="${isHidden ? 'color:#9ca3af; font-style:italic;' : ''}">${comment.text}</div>
     `;
     wrapper.appendChild(div);
 

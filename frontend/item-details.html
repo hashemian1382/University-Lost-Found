@@ -7,6 +7,23 @@
     <title>جزئیات آگهی</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="assets/css/details.css">
+    <style>
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000; display: none;
+            justify-content: center; align-items: center;
+        }
+        .modal-box {
+            background: white; padding: 25px; border-radius: 12px;
+            width: 90%; max-width: 400px; text-align: center;
+        }
+        .modal-actions { margin-top: 20px; display: flex; gap: 10px; justify-content: center; }
+        .comment-report-btn {
+            background: none; border: none; color: #9ca3af; cursor: pointer;
+            padding: 4px; display: flex; align-items: center;
+        }
+        .comment-report-btn:hover { color: #ef4444; }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -25,7 +42,6 @@
     <div class="container">
         <div class="details-grid">
             <div class="info-column">
-                <!-- کارت اطلاعات اصلی -->
                 <div class="card">
                     <img id="item-image" src="" class="item-hero-img">
                     
@@ -56,16 +72,13 @@
                     </div>
                 </div>
 
-                <!-- کارت نظرات (تغییر یافته) -->
                 <div class="card chat-card">
                     <h3 class="section-title">گفتگو و نظرات</h3>
                     
-                    <!-- لیست کامنت‌ها -->
                     <div id="comments-list" class="comments-container">
                         <div class="loading-spinner">در حال بارگذاری نظرات...</div>
                     </div>
 
-                    <!-- فرم ارسال نظر -->
                     <div class="comment-form">
                         <textarea id="comment-text" class="chat-input" placeholder="نظر یا پیام خود را اینجا بنویسید..."></textarea>
                         <button id="btn-submit-comment" class="btn btn-primary" style="width:100%;">ارسال پیام</button>
@@ -79,7 +92,7 @@
                 </div>
                 
                 <div class="card action-card">
-                    <button class="btn btn-danger" onclick="alert('گزارش تخلف ثبت شد.')">
+                    <button class="btn btn-danger" id="btn-report-item">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:8px;">
                             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                             <line x1="12" y1="9" x2="12" y2="13"></line>
@@ -88,6 +101,23 @@
                         گزارش محتوای نامناسب
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="report-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>گزارش تخلف</h3>
+            <p>لطفاً دلیل گزارش خود را انتخاب کنید:</p>
+            <select id="report-reason" class="chat-input" style="margin: 15px 0;">
+                <option value="SPAM">اسپم / تبلیغات</option>
+                <option value="INAPPROPRIATE">محتوای نامناسب</option>
+                <option value="FAKE">اطلاعات غیرواقعی</option>
+                <option value="OTHER">سایر موارد</option>
+            </select>
+            <div class="modal-actions">
+                <button id="btn-cancel-report" class="btn" style="background:#e5e7eb; color:#374151">انصراف</button>
+                <button id="btn-confirm-report" class="btn btn-danger">ثبت گزارش</button>
             </div>
         </div>
     </div>

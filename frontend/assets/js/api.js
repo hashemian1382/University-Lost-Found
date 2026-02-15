@@ -103,4 +103,12 @@ class ApiService {
     static async addComment(data) {
         return await this.request(CONFIG.ENDPOINTS.COMMENTS_ADD, 'POST', data, true);
     }
+
+    static async submitReport(type, id, reason) {
+        return await this.request(CONFIG.ENDPOINTS.REPORT, 'POST', {
+            content_type_str: type,
+            object_id: id,
+            reason: reason
+        }, true);
+    }
 }
