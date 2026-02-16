@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot - Lost & Found</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/auth-modern.css">
+    <style>
+        .chatbot-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .chatbot-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .chatbot-header h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+
+        .chatbot-header p {
+            color: #64748b;
+        }
+
+        .chat-interface {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 968px) {
+            .chat-interface {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .input-section h2 {
+            margin-bottom: 20px;
+            color: #1e293b;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .input-group textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .btn-analyze {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-analyze:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-analyze:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .results-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .results-section h2 {
+            margin-bottom: 20px;
+            color: #1e293b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .extracted-info {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .extracted-info h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .type-lost {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .type-found {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .info-item {
+            margin-bottom: 12px;
+        }
+
+        .info-item strong {
+            color: #475569;
+            display: inline-block;
+            min-width: 100px;
+        }
+
+        .tags-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .tag {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 14px;
+        }
+
+        .similar-items {
+            margin-top: 25px;
+        }
+
+        .similar-items h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+
+        .item-card {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .item-card:hover {
+            border-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+
+        .item-card h4 {
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .match-score {
+            background: #10b981;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .item-card p {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .item-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .example-prompts {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+
+        .example-prompts h4 {
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 10px;
+        }
+
+        .example-prompts ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .example-prompts li {
+            padding: 8px;
+            margin-bottom: 6px;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+
+        .example-prompts li:hover {
+            background: #2563eb;
+            color: white;
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbot-container">
+        <div class="chatbot-header">
+            <h1>🤖 AI Lost & Found Assistant</h1>
+            <p>Describe what you lost or found, and our AI will help you find matches</p>
+        </div>
+
+        <div class="chat-interface">
+            <!-- Input Section -->
+            <div class="input-section">
+                <h2>Describe Your Item</h2>
+                
+                <div class="input-group">
+                    <label for="description">Tell us about the item:</label>
+                    <textarea 
+                        id="description" 
+                        placeholder="Example: I lost my blue iPhone 13 near the library yesterday. It has a cracked screen and a sticker on the back..."
+                    ></textarea>
+                </div>
+
+                <button class="btn-analyze" id="analyzeBtn" onclick="analyzeDescription()">
+                    🔍 Analyze & Search
+                </button>
+
+                <div class="example-prompts">
+                    <h4>💡 Try these examples:</h4>
+                    <ul>
+                        <li onclick="fillExample(this)">I lost my black wallet in the cafeteria this morning. It has my student ID inside.</li>
+                        <li onclick="fillExample(this)">Found a brown leather bag in the gym. Contains some books and a water bottle.</li>
+                        <li onclick="fillExample(this)">I can't find my silver laptop charger. Last saw it in the engineering building.</li>
+                        <li onclick="fillExample(this)">Found a set of keys with a red keychain near the parking lot.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section">
+                <h2>Results</h2>
+                <div id="resultsContainer">
+                    <div class="empty-state">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                        </svg>
+                        <p>Enter a description above to get started</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/chatbot.js"></script>
+</body>
+</html>
