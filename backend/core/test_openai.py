@@ -1,5 +1,5 @@
 """
-Test script to verify OpenAI API connection
+Test script to verify Groq AI API connection
 Run this script to test if your API key is configured correctly
 """
 import os
@@ -19,21 +19,32 @@ django.setup()
 from core.ai_service import ChatBotService
 
 
-def test_openai_connection():
-    """Test OpenAI API connection and functionality"""
+def test_groq_connection():
+    """Test Groq AI API connection and functionality"""
     
     print("=" * 60)
-    print("OpenAI API Connection Test")
+    print("Groq AI API Connection Test")
     print("=" * 60)
     print()
     
+    # Check if mock mode is enabled
+    use_mock = os.getenv('USE_MOCK_AI', 'false').lower() == 'true'
+    if use_mock:
+        print("⚠️  MOCK MODE ENABLED")
+        print("   Using simulated AI responses for testing")
+        print("   Set USE_MOCK_AI=false in .env to use real API")
+        print()
+    
     # Check if API key is set
-    api_key = os.getenv('OPENAI_API_KEY')
+    api_key = os.getenv('GROQ_API_KEY')
     if not api_key:
-        print("❌ FAILED: OPENAI_API_KEY environment variable is not set")
+        print("❌ FAILED: GROQ_API_KEY environment variable is not set")
         print()
         print("Please set your API key in the .env file:")
-        print("OPENAI_API_KEY=sk-your-api-key-here")
+        print("GROQ_API_KEY=your-api-key-here")
+        print()
+        print("Get your FREE API key from:")
+        print("https://console.groq.com/keys")
         return False
     
     # Mask API key for security
@@ -68,6 +79,8 @@ def test_openai_connection():
             return False
         
         print("✓ Extraction successful!")
+        if result.get('mock'):
+            print("  (Using MOCK AI response)")
         print()
         print("Extracted Information:")
         print("-" * 60)
@@ -118,7 +131,7 @@ def test_openai_connection():
     print("✅ ALL TESTS PASSED!")
     print("=" * 60)
     print()
-    print("Your OpenAI API is configured correctly and working!")
+    print("Your Groq AI API is configured correctly and working!")
     print("You can now use the chatbot feature in your application.")
     print()
     return True
@@ -126,7 +139,7 @@ def test_openai_connection():
 
 if __name__ == "__main__":
     try:
-        success = test_openai_connection()
+        success = test_groq_connection()
         sys.exit(0 if success else 1)
     except KeyboardInterrupt:
         print("\n\nTest interrupted by user")
