@@ -51,6 +51,7 @@ class ChatBotResponseSerializer(serializers.Serializer):
         help_text="Detailed description of the item"
     )
     location_description = serializers.CharField(
+        allow_blank=True,
         help_text="Description of where the item was lost or found"
     )
     latitude = serializers.FloatField(
