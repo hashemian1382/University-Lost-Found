@@ -21,7 +21,7 @@ async function analyzeDescription() {
     if (isAnalyzing) return;
 
     // Check if user is logged in
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem('access_token');
     if (!accessToken) {
         showError('Please login first to use the chatbot');
         setTimeout(() => {
@@ -57,8 +57,8 @@ async function analyzeDescription() {
 
         if (response.status === 401) {
             // Token expired, redirect to login
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
             showError('Session expired. Please login again.');
             setTimeout(() => {
                 window.location.href = 'login.html';
