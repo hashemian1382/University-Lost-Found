@@ -59,34 +59,25 @@ class MapDataView(generics.ListAPIView):
 
 class ChatBotView(APIView):
     """
-    API endpoint for chatbot service that extracts structured information
-    from natural language descriptions and searches for similar items
+    API endpoint for chatbot service that finds related items
+    by sending all items and user description to AI
     """
     permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request):
         """
-        Process user's natural language description, extract info, and find similar items
+        Process user's natural language description and find related items using AI
         
         Request body:
         {
-            "description": "User's description of lost or found item",
-            "search": true  // Optional: set to false to skip search
+            "description": "User's description of lost or found item"
         }
         
         Response:
         {
-            "extracted_info": {
-                "type": "LOST" or "FOUND",
-                "title": "Item title",
-                "description": "Detailed description",
-                "location_description": "Location description",
-                "latitude": float or null,
-                "longitude": float or null,
-                "tags": ["tag1", "tag2", ...]
-            },
-            "similar_items": [...],  // Array of similar items found
-            "total_matches": 5       // Number of matches found
+            "related_items": [...],     // Array of related items found
+            "total_matches": 5,          // Number of matches found
+            "explanation": "Brief explanation of why these items were selected"
         }
         """
         # Validate request
@@ -98,89 +89,82 @@ class ChatBotView(APIView):
             )
         
         user_description = request_serializer.validated_data['description']
-        should_search = request.data.get('search', True)  # Default to True
         
-        print(f"\n=== CHATBOT REQUEST ===")
+        print(f"\n=== CHATBOT REQUEST (NEW APPROACH) ===")
         print(f"User: {request.user}")
         print(f"Description: {user_description[:100]}...")
-        print(f"Should search: {should_search}")
         
         try:
-            # Initialize AI service and extract information
-            print("Step 1: Initializing ChatBotService...")
+            # Step 1: Fetch all active items from database
+            print("Step 1: Fetching all active items from database...")
+            all_items = Item.objects.filter(status='ACTIVE').select_related('author').prefetch_related('tags')
+            print(f"Step 2: Found {all_items.count()} active items")
+            
+            # Step 2: Prepare items data for AI
+            print("Step 3: Preparing items data for AI...")
+            items_data = []
+            for item in all_items:
+                items_data.append({
+                    'id': item.id,
+                    'title': item.title,
+                    'description': item.description,
+                    'type': item.type,
+                    'tags': [tag.name for tag in item.tags.all()],
+                    'location_description': f"Lat: {item.latitude}, Lon: {item.longitude}"
+                })
+            print(f"Step 4: Prepared {len(items_data)} items for AI")
+            
+            # Step 3: Initialize AI service and find related items
+            print("Step 5: Initializing ChatBotService...")
             chatbot_service = ChatBotService()
-            print("Step 2: Calling extract_item_info...")
-            result = chatbot_service.extract_item_info(user_description)
-            print(f"Step 3: Got result - success: {result.get('success')}")
+            print("Step 6: Calling find_related_items...")
+            result = chatbot_service.find_related_items(user_description, items_data)
+            print(f"Step 7: Got result - success: {result.get('success')}")
             
             if not result['success']:
-                print(f"ERROR: AI extraction failed - {result.get('error')}")
+                print(f"ERROR: AI matching failed - {result.get('error')}")
                 return Response(
                     {
-                        'error': 'Failed to process description',
+                        'error': 'Failed to find related items',
                         'details': result.get('error', 'Unknown error')
                     },
                     status=http_status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
             
-            print("Step 4: Extracting data from result...")
-            extracted_data = result['data']
-            print(f"Step 5: Data keys: {extracted_data.keys()}")
+            # Step 4: Get the related item IDs from AI response
+            print("Step 8: Extracting related item IDs from result...")
+            related_item_ids = result['data']['related_item_ids']
+            explanation = result['data'].get('explanation', 'AI matched these items based on similarity.')
+            print(f"Step 9: AI found {len(related_item_ids)} related items")
             
-            # Validate extracted info
-            print("Step 6: Validating with ChatBotResponseSerializer...")
-            response_serializer = ChatBotResponseSerializer(data=extracted_data)
-            if not response_serializer.is_valid():
-                print(f"ERROR: Validation failed - {response_serializer.errors}")
-                return Response(
-                    {
-                        'error': 'Invalid response from AI',
-                        'details': response_serializer.errors
-                    },
-                    status=http_status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
+            # Step 5: Fetch the actual items from database
+            print("Step 10: Fetching related items from database...")
+            related_items = Item.objects.filter(
+                id__in=related_item_ids,
+                status='ACTIVE'
+            ).select_related('author').prefetch_related('tags')
             
-            print("Step 7: Validation successful!")
+            # Preserve the order from AI (by match relevance)
+            print("Step 11: Ordering items by AI relevance...")
+            items_dict = {item.id: item for item in related_items}
+            ordered_items = [items_dict[item_id] for item_id in related_item_ids if item_id in items_dict]
+            print(f"Step 12: Ordered {len(ordered_items)} items")
             
-            # If search is disabled, return only extracted info
-            if not should_search:
-                print("Step 8: Search disabled, returning extracted info only")
-                return Response(
-                    response_serializer.data,
-                    status=http_status.HTTP_200_OK
-                )
+            # Step 6: Serialize the related items
+            print("Step 13: Serializing related items...")
+            related_items_serializer = SimilarItemSerializer(ordered_items, many=True)
             
-            # Search for similar items in database
-            print("Step 8: Initializing ItemSearchService...")
-            search_service = ItemSearchService()
-            print("Step 9: Searching for similar items...")
-            similar_items = search_service.search_similar_items(extracted_data)
-            print(f"Step 10: Found {len(similar_items)} similar items")
-            
-            # Calculate match scores for each item
-            print("Step 11: Calculating match scores...")
-            for item in similar_items:
-                item.match_score = search_service.get_match_score(extracted_data, item)
-            
-            # Sort by match score (highest first)
-            print("Step 12: Sorting items...")
-            similar_items.sort(key=lambda x: x.match_score, reverse=True)
-            
-            # Serialize similar items
-            print("Step 13: Serializing similar items...")
-            similar_items_serializer = SimilarItemSerializer(similar_items, many=True)
-            
-            # Prepare complete response
-            print("Step 14: Preparing complete response...")
-            complete_response = {
-                'extracted_info': response_serializer.data,
-                'similar_items': similar_items_serializer.data,
-                'total_matches': len(similar_items)
+            # Step 7: Prepare response
+            print("Step 14: Preparing response...")
+            response_data = {
+                'related_items': related_items_serializer.data,
+                'total_matches': len(ordered_items),
+                'explanation': explanation
             }
             
             print("Step 15: SUCCESS! Returning response.")
             return Response(
-                complete_response,
+                response_data,
                 status=http_status.HTTP_200_OK
             )
             

@@ -108,66 +108,45 @@ window.analyzeDescription = analyzeDescription;
 
 function displayResults(data) {
     const resultsContainer = document.getElementById('resultsContainer');
-    const { extracted_info, similar_items, total_matches } = data;
+    const { related_items, total_matches, explanation } = data;
 
     let html = '';
 
-    // Display extracted information
-    const typeText = String(extracted_info.type || 'LOST') === 'LOST' ? 'گم شده' : 'پیدا شده';
-    const typeClass = String(extracted_info.type || 'LOST') === 'LOST' ? 'type-lost' : 'type-found';
-    
-    html += `
-        <div class="extracted-info">
-            <h3>
-                📋 اطلاعات استخراج شده 
-                <span class="type-badge ${typeClass}">
-                    ${typeText}
-                </span>
-            </h3>
-            <div class="info-item">
-                <strong>عنوان:</strong> ${escapeHtml(String(extracted_info.title || ''))}
-            </div>
-            <div class="info-item">
-                <strong>توضیحات:</strong> ${escapeHtml(String(extracted_info.description || ''))}
-            </div>
-            <div class="info-item">
-                <strong>مکان:</strong> ${escapeHtml(String(extracted_info.location_description || ''))}
-            </div>
-            ${extracted_info.latitude && extracted_info.longitude ? `
+    // Display AI explanation
+    if (explanation) {
+        html += `
+            <div class="extracted-info">
+                <h3>🤖 توضیح هوش مصنوعی</h3>
                 <div class="info-item">
-                    <strong>مختصات:</strong> ${Number(extracted_info.latitude).toFixed(6)}, ${Number(extracted_info.longitude).toFixed(6)}
-                </div>
-            ` : ''}
-            <div class="info-item">
-                <strong>برچسب‌ها:</strong>
-                <div class="tags-list">
-                    ${Array.isArray(extracted_info.tags) ? extracted_info.tags.map(tag => `<span class="tag">${escapeHtml(String(tag || ''))}</span>`).join('') : ''}
+                    ${escapeHtml(String(explanation || ''))}
                 </div>
             </div>
-        </div>
-    `;
+        `;
+    }
 
-    // Display similar items
+    // Display related items
     html += '<div class="similar-items">';
     
     const totalCount = Number(total_matches || 0);
     
     if (totalCount > 0) {
-        const itemTypeText = String(extracted_info.type || 'LOST') === 'LOST' ? 'پیدا شده' : 'گم شده';
         const pluralText = totalCount !== 1 ? 'مورد' : 'مورد';
-        html += `<h3>🎯 ${totalCount} ${pluralText} مشابه ${itemTypeText} پیدا شد</h3>`;
+        html += `<h3>🎯 ${totalCount} ${pluralText} مرتبط پیدا شد</h3>`;
         
-        if (Array.isArray(similar_items)) {
-            similar_items.forEach(item => {
-                const matchPercentage = Math.round(Number(item.match_score || 0) * 100);
+        if (Array.isArray(related_items)) {
+            related_items.forEach((item, idx) => {
                 const dateStr = new Date(String(item.created_at || '')).toLocaleDateString('fa-IR');
+                const itemTypeText = String(item.type || 'LOST') === 'LOST' ? 'گم شده' : 'پیدا شده';
+                const typeClass = String(item.type || 'LOST') === 'LOST' ? 'type-lost' : 'type-found';
                 
                 html += `
                     <div class="item-card" onclick="viewItemDetails(${Number(item.id || 0)})">
-                        <h4>
-                            ${escapeHtml(String(item.title || ''))}
-                            <span class="match-score">${matchPercentage}% تطابق</span>
-                        </h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h4>${escapeHtml(String(item.title || ''))}</h4>
+                            <span class="type-badge ${typeClass}" style="font-size: 12px; margin-left: 10px;">
+                                ${itemTypeText}
+                            </span>
+                        </div>
                         <p>${escapeHtml(truncateText(String(item.description || ''), 120))}</p>
                         <div class="item-meta">
                             <span>📅 ${dateStr}</span>
@@ -176,16 +155,18 @@ function displayResults(data) {
                                 `<span>🏷️ ${item.tags_details.map(t => String(t.name || '')).join('، ')}</span>` : 
                                 ''}
                         </div>
+                        <div style="font-size: 12px; color: #666; margin-top: 8px;">
+                            🔢 رتبه مرتبط‌سازی: #${idx + 1}
+                        </div>
                     </div>
                 `;
             });
         }
     } else {
-        const oppositeType = String(extracted_info.type || 'LOST') === 'LOST' ? 'پیدا شده' : 'گم شده';
         html += `
-            <h3>🔍 موردی مشابه پیدا نشد</h3>
+            <h3>🔍 موردی مرتبط پیدا نشد</h3>
             <div class="empty-state">
-                <p>هنوز هیچ مورد ${oppositeType} مشابهی در پایگاه داده وجود ندارد.</p>
+                <p>هنوز هیچ مورد مرتبطی در پایگاه داده وجود ندارد.</p>
                 <p style="margin-top: 10px; font-size: 14px;">بعداً دوباره بررسی کنید یا شیء خود را ثبت کنید تا به دیگران کمک کنید!</p>
             </div>
         `;
