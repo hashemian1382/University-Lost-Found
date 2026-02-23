@@ -2,6 +2,10 @@
 Direct test of Google Gemini API with detailed logging
 This script makes a simple API call to test connectivity
 """
+if __name__ != "__main__":
+    import unittest
+    raise unittest.SkipTest("Integration script: run directly, not via unittest discovery.")
+
 import os
 import sys
 import json
