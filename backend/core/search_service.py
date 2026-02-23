@@ -49,12 +49,29 @@ class ItemSearchService:
         search_query = Q()
         
         # Search by title and description keywords
+        # PRIORITY 1: Search in TITLE first (more specific and reliable)
         keywords = ItemSearchService._extract_keywords(title, description)
+        title_query = Q()
         for keyword in keywords:
-            search_query |= Q(title__icontains=keyword) | Q(description__icontains=keyword)
+            title_query |= Q(title__icontains=keyword)
         
-        if search_query:
-            queryset = queryset.filter(search_query)
+        # Try title search first
+        if title_query:
+            queryset = queryset.filter(title_query).distinct()
+            print(f"After title search: {queryset.count()} items found")
+        
+        # PRIORITY 2: If no results in title, search in both title and description
+        if not queryset.exists():
+            print("No title matches, expanding to title + description...")
+            for keyword in keywords:
+                search_query |= Q(title__icontains=keyword) | Q(description__icontains=keyword)
+            
+            if search_query:
+                queryset = Item.objects.filter(
+                    status='ACTIVE',
+                    type=opposite_type
+                ).filter(search_query).distinct()
+                print(f"After title+description search: {queryset.count()} items found")
         
         # Filter by tags if available
         if tags:
@@ -137,24 +154,31 @@ class ItemSearchService:
         score = 0.0
         max_score = 0.0
         
-        # Check tags match (weight: 0.4)
-        max_score += 0.4
+        # Check tags match (weight: 0.3)
+        max_score += 0.3
         tags = extracted_data.get('tags', [])
         if tags and item.tags.exists():
             item_tag_names = [tag.name for tag in item.tags.all()]
             matching_tags = len(set(tags) & set(item_tag_names))
-            score += (matching_tags / len(tags)) * 0.4
+            score += (matching_tags / len(tags)) * 0.3
         
-        # Check keyword match in title/description (weight: 0.4)
-        max_score += 0.4
+        # Check keyword match in TITLE (weight: 0.5 - highest priority!)
+        max_score += 0.5
         keywords = ItemSearchService._extract_keywords(
             extracted_data.get('title', ''),
             extracted_data.get('description', '')
         )
-        item_text = f"{item.title} {item.description}".lower()
-        matching_keywords = sum(1 for kw in keywords if kw in item_text)
+        item_title = item.title.lower()
+        title_matches = sum(1 for kw in keywords if kw in item_title)
         if keywords:
-            score += (matching_keywords / len(keywords)) * 0.4
+            score += (title_matches / len(keywords)) * 0.5
+        
+        # Check keyword match in DESCRIPTION (weight: 0.2 - lower priority)
+        max_score += 0.2
+        item_description = item.description.lower()
+        description_matches = sum(1 for kw in keywords if kw not in item_title and kw in item_description)
+        if keywords:
+            score += (description_matches / len(keywords)) * 0.2
         
         # Check location proximity (weight: 0.2)
         max_score += 0.2

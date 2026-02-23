@@ -215,6 +215,11 @@ Extract the following information and return it as a JSON object:
 6. "longitude": If a specific location is mentioned and you can infer coordinates, provide it (optional, can be null)
 7. "tags": An array of relevant tags from the available tags list (at least one tag is required)
 
+CRITICAL LANGUAGE RULES:
+- **PRESERVE THE ORIGINAL LANGUAGE**: If the user writes in Persian/Farsi, Arabic, or any non-English language, keep ALL text (title, description, location) in that EXACT language. DO NOT TRANSLATE.
+- Only use English if the user's input is in English
+- The title and description should be in the SAME language as the user's input
+
 Important rules:
 - If the user doesn't explicitly state whether they lost or found something, try to infer from context
 - If you can't determine if it's lost or found, default to "LOST"
@@ -222,9 +227,9 @@ Important rules:
 - Choose tags that best match the item category
 - Make the title concise but descriptive
 - Include all relevant details in the description
+- **The title should be very specific and match-friendly** - use the most important keywords that someone searching would use
 
-Example input: "I lost my iPhone 13 Pro Max in blue color near the library yesterday. It has a cracked screen and a sticker on the back."
-
+Example input (English): "I lost my iPhone 13 Pro Max in blue color near the library yesterday. It has a cracked screen and a sticker on the back."
 Example output:
 {{
     "type": "LOST",
@@ -234,6 +239,18 @@ Example output:
     "latitude": null,
     "longitude": null,
     "tags": ["Electronics"]
+}}
+
+Example input (Persian): "مداد رنگی گم کردم"
+Example output:
+{{
+    "type": "LOST",
+    "title": "مداد رنگی",
+    "description": "مداد رنگی گم شده",
+    "location_description": "",
+    "latitude": null,
+    "longitude": null,
+    "tags": ["Other"]
 }}
 
 Always respond with valid JSON only, no additional text."""

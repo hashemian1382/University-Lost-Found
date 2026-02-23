@@ -1,37 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chatbot - Lost & Found</title>
+    <title>دستیار هوشمند - اشیای گم و پیدا شده</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/auth-modern.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-button:hover {
+            background: #2563eb;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
         .chatbot-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 20px;
+            max-width: 1100px;
+            margin: 15px auto;
+            padding: 15px;
         }
 
         .chatbot-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            padding-top: 40px;
         }
 
         .chatbot-header h1 {
             color: #2563eb;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-size: 24px;
         }
 
         .chatbot-header p {
             color: #64748b;
+            font-size: 14px;
         }
 
         .chat-interface {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-top: 30px;
+            gap: 20px;
+            margin-top: 20px;
+            min-height: calc(100vh - 200px);
         }
 
         @media (max-width: 968px) {
@@ -42,18 +83,20 @@
 
         .input-section {
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            height: fit-content;
         }
 
         .input-section h2 {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #1e293b;
+            font-size: 18px;
         }
 
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .input-group label {
@@ -61,17 +104,20 @@
             margin-bottom: 8px;
             color: #475569;
             font-weight: 500;
+            font-size: 14px;
         }
 
         .input-group textarea {
             width: 100%;
-            min-height: 150px;
+            min-height: 120px;
             padding: 12px;
             border: 2px solid #e2e8f0;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             resize: vertical;
-            font-family: inherit;
+            font-family: 'Vazirmatn', sans-serif;
+            direction: rtl;
+            text-align: right;
         }
 
         .input-group textarea:focus {
@@ -81,12 +127,12 @@
 
         .btn-analyze {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: #2563eb;
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.3s;
@@ -103,19 +149,22 @@
 
         .results-section {
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
         }
 
         .results-section h2 {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #1e293b;
+            font-size: 18px;
         }
 
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 30px;
             color: #64748b;
         }
 
@@ -123,10 +172,10 @@
             border: 3px solid #f3f4f6;
             border-top: 3px solid #2563eb;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin: 0 auto 15px;
         }
 
         @keyframes spin {
@@ -136,24 +185,25 @@
 
         .extracted-info {
             background: #f8fafc;
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .extracted-info h3 {
             color: #1e293b;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 16px;
         }
 
         .type-badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
         }
 
@@ -168,18 +218,19 @@
         }
 
         .info-item {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
+            font-size: 14px;
         }
 
         .info-item strong {
             color: #475569;
             display: inline-block;
-            min-width: 100px;
+            min-width: 80px;
         }
 
         .tags-list {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
             margin-top: 5px;
         }
@@ -187,25 +238,26 @@
         .tag {
             background: #dbeafe;
             color: #1e40af;
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 16px;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .similar-items {
-            margin-top: 25px;
+            margin-top: 20px;
         }
 
         .similar-items h3 {
             color: #1e293b;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            font-size: 16px;
         }
 
         .item-card {
             background: #f8fafc;
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             cursor: pointer;
             transition: all 0.3s;
             border: 2px solid transparent;
@@ -219,10 +271,11 @@
 
         .item-card h4 {
             color: #1e293b;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 15px;
         }
 
         .match-score {
@@ -230,56 +283,58 @@
             color: white;
             padding: 2px 8px;
             border-radius: 12px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
         }
 
         .item-card p {
             color: #64748b;
-            font-size: 14px;
+            font-size: 13px;
             margin-bottom: 8px;
             line-height: 1.5;
         }
 
         .item-meta {
             display: flex;
-            gap: 15px;
-            font-size: 13px;
+            gap: 12px;
+            font-size: 12px;
             color: #94a3b8;
+            flex-wrap: wrap;
         }
 
         .empty-state {
             text-align: center;
-            padding: 40px;
+            padding: 30px;
             color: #94a3b8;
         }
 
         .empty-state svg {
-            width: 64px;
-            height: 64px;
-            margin-bottom: 16px;
+            width: 50px;
+            height: 50px;
+            margin-bottom: 12px;
             opacity: 0.5;
         }
 
         .error-message {
             background: #fee2e2;
             color: #991b1b;
-            padding: 16px;
+            padding: 12px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-size: 14px;
         }
 
         .example-prompts {
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 15px;
+            padding: 12px;
             background: #f1f5f9;
             border-radius: 8px;
         }
 
         .example-prompts h4 {
-            font-size: 14px;
+            font-size: 13px;
             color: #475569;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .example-prompts ul {
@@ -289,11 +344,11 @@
 
         .example-prompts li {
             padding: 8px;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             background: white;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             color: #64748b;
             transition: all 0.2s;
         }
@@ -301,54 +356,58 @@
         .example-prompts li:hover {
             background: #2563eb;
             color: white;
-            transform: translateX(5px);
+            transform: translateX(-5px);
         }
     </style>
 </head>
 <body>
+    <a href="index.html" class="back-button">
+        ← بازگشت به صفحه اصلی
+    </a>
+
     <div class="chatbot-container">
         <div class="chatbot-header">
-            <h1>🤖 AI Lost & Found Assistant</h1>
-            <p>Describe what you lost or found, and our AI will help you find matches</p>
+            <h1>🤖 دستیار هوشمند اشیای گم و پیدا شده</h1>
+            <p>شیء گم شده یا پیدا شده خود را توضیح دهید و هوش مصنوعی ما به شما کمک خواهد کرد تا موارد مشابه را پیدا کنید</p>
         </div>
 
         <div class="chat-interface">
             <!-- Input Section -->
             <div class="input-section">
-                <h2>Describe Your Item</h2>
+                <h2>شیء خود را توصیف کنید</h2>
                 
                 <div class="input-group">
-                    <label for="description">Tell us about the item:</label>
+                    <label for="description">درباره شیء به ما بگویید:</label>
                     <textarea 
                         id="description" 
-                        placeholder="Example: I lost my blue iPhone 13 near the library yesterday. It has a cracked screen and a sticker on the back..."
+                        placeholder="مثال: من آیفون ۱۳ آبی رنگم را در نزدیکی کتابخانه دیروز گم کردم. صفحه آن شکسته است و یک برچسب پشت آن دارد..."
                     ></textarea>
                 </div>
 
-                <button class="btn-analyze" id="analyzeBtn" onclick="analyzeDescription()">
-                    🔍 Analyze & Search
+                <button class="btn-analyze" id="analyzeBtn">
+                    🔍 تحلیل و جستجو
                 </button>
 
                 <div class="example-prompts">
-                    <h4>💡 Try these examples:</h4>
+                    <h4>💡 این مثال‌ها را امتحان کنید:</h4>
                     <ul>
-                        <li onclick="fillExample(this)">I lost my black wallet in the cafeteria this morning. It has my student ID inside.</li>
-                        <li onclick="fillExample(this)">Found a brown leather bag in the gym. Contains some books and a water bottle.</li>
-                        <li onclick="fillExample(this)">I can't find my silver laptop charger. Last saw it in the engineering building.</li>
-                        <li onclick="fillExample(this)">Found a set of keys with a red keychain near the parking lot.</li>
+                        <li onclick="fillExample(this)">من کیف پول مشکی‌ام را صبح امروز در کافه‌تریا گم کردم. کارت دانشجویی‌ام داخل آن است.</li>
+                        <li onclick="fillExample(this)">یک کیف چرمی قهوه‌ای در سالن ورزشی پیدا کردم. شامل چند کتاب و یک بطری آب است.</li>
+                        <li onclick="fillExample(this)">نمی‌توانم شارژر لپ‌تاپ نقره‌ای خود را پیدا کنم. آخرین بار آن را در ساختمان مهندسی دیدم.</li>
+                        <li onclick="fillExample(this)">یک دسته کلید با جاکلیدی قرمز نزدیک پارکینگ پیدا کردم.</li>
                     </ul>
                 </div>
             </div>
 
             <!-- Results Section -->
             <div class="results-section">
-                <h2>Results</h2>
+                <h2>نتایج</h2>
                 <div id="resultsContainer">
                     <div class="empty-state">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                         </svg>
-                        <p>Enter a description above to get started</p>
+                        <p>برای شروع، یک توضیح در بالا وارد کنید</p>
                     </div>
                 </div>
             </div>
