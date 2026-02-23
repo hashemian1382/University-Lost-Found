@@ -6,7 +6,11 @@ import json
 import os
 import time
 from typing import Dict, Optional
-from openai import OpenAI
+
+try:
+    from openai import OpenAI
+except ImportError:  # pragma: no cover - environment-dependent
+    OpenAI = None
 
 
 class ChatBotService:
@@ -22,6 +26,10 @@ class ChatBotService:
         self.use_mock = os.getenv('USE_MOCK_AI', 'false').lower() == 'true'
         
         if not self.use_mock:
+            if OpenAI is None:
+                raise ValueError(
+                    "openai package is not installed. Install it or set USE_MOCK_AI=true."
+                )
             try:
                 # Groq uses OpenAI-compatible API
                 self.client = OpenAI(
