@@ -19,5 +19,5 @@ const CONFIG = {
     }
 };
 
-const DEFAULT_COORDS = [35.7036, 51.3515];
-const DEFAULT_ZOOM = 18;
+const DEFAULT_COORDS = [35.7026, 51.3509];
+const DEFAULT_ZOOM = 17;

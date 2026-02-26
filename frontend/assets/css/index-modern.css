@@ -54,7 +54,6 @@ button { cursor: pointer; border: none; outline: none; font-family: inherit; }
 .search-input:focus { background: white; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); outline: none; }
 .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
 
-/* Filter Toolbar Styles - FIX FOR SCROLLING */
 .filter-toolbar {
     display: flex; 
     align-items: center; 
@@ -71,7 +70,7 @@ button { cursor: pointer; border: none; outline: none; font-family: inherit; }
     display: flex;
     align-items: center;
     position: relative;
-    flex-shrink: 0; /* جلوگیری از جمع شدن بخش مرتب‌سازی */
+    flex-shrink: 0;
 }
 
 .sort-icon {
@@ -103,11 +102,10 @@ button { cursor: pointer; border: none; outline: none; font-family: inherit; }
     flex-shrink: 0;
 }
 
-/* Wrapper to force flex child to respect width */
 .tags-wrapper-outer {
     flex-grow: 1;
-    min-width: 0; /* حیاتی برای اسکرول شدن در فلکس باکس */
-    overflow: hidden; /* مخفی کردن سرریز والد */
+    min-width: 0;
+    overflow: hidden;
 }
 
 .tags-scroll-container {
@@ -208,6 +206,34 @@ button { cursor: pointer; border: none; outline: none; font-family: inherit; }
     transform: translateY(-2px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     color: var(--primary);
+}
+
+.hotspot-marker {
+    background: var(--primary);
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    color: white;
+    font-weight: 800;
+    font-size: 11px;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.hotspot-marker:hover {
+    transform: scale(1.15);
+    z-index: 1000 !important;
+}
+.hotspot-marker.active {
+    background: var(--accent);
+    color: var(--primary);
+    border-color: var(--primary);
+    transform: scale(1.1);
+    box-shadow: 0 0 0 5px rgba(229, 185, 96, 0.4);
 }
 
 .modal-overlay {
